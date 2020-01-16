@@ -1,0 +1,9 @@
+if files
+  each file in files
+    .card.card-bosy.mb3
+      if file.isImage
+        img(src='image/#{file.filename}', alt = '')
+      else
+        #{file.filname}
+else
+  p.description Nessuna Foto Caricata

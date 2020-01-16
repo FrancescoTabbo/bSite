@@ -1,0 +1,128 @@
+html
+  head
+    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css")
+    title File Transfer
+    |   
+    meta(charset='utf-8')
+    |   
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    |   
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css')
+    |   
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js')
+    |   
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+    |   
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js')
+    |
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")
+    style
+      include ../css/sty.css
+  |   
+  body(data-spy="scroll" data-target=".navbar" data-offset="50")
+    br
+    nav.navbar.navbar-default.navbar-fixed-top
+        .container-fluid
+          navbar-header
+            navbar-inner
+              button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#myNavbar', aria-expanded='false')
+                span.icon-bar
+                |         
+                span.icon-bar
+                |         
+                span.icon-bar
+              |       
+            |     
+            #myNavbar.navbar-collapse.collapse(aria-expanded='false', style='height: 1px;')
+              ul.nav.navbar-nav.navbar-right
+                li.active
+                  form(action='/',id ='maan', method='POST')
+                    a(href="") HOME
+                |         
+                li
+                  a(href='#band') BAND
+                |         
+                li
+                  a(href='#tour') TOUR
+                |         
+                li
+                  a(href='#contact') CONTACT
+                |         
+                li
+                  a(href='#')
+                    span.glyphicon.glyphicon-search
+    .container
+      .row
+        .col-md-6.m-auto
+          form(action='/send', method='POST', enctype='multipart/form-data')
+            h3(class='text-center display-4 my-4') #{msg}
+            .custom-file.mb-3
+              |
+              label(for='file', class='custom-file-label') Scegli il File
+              br
+              input(type='file', ngf-select='', ng-model='exFile', name='file', id = 'file', class='custom-file-input', required=' ')
+              script
+                include ../js/scri.js
+              |       
+              | #{ok}
+              br
+              |       
+              input(type='submit', value='Carica', class='btn btn-primary btn-block')
+          br
+          hr
+          br
+          | #{err}
+          if files
+            each file in files
+              .card.card-bosy.mb3
+                if file.isImage
+                  - var url = file.filename
+                  img(src='/image/' + url + '')
+                else
+                  | #{file.metadata.original}
+                  //
+                    span.file
+                      a(href='../someurl/print.pdf') Print PDF
+                    span.file
+                      a(href='../someurl/test.pdf') Test PDF
+                    p
+                      | Should show up a word icon
+                    span.file
+                      a(href='../someurl/word-test.docx') Word document
+              .row
+                .col-sm-6
+                  .card-footer
+                    - var id = file._id
+                    - var nome = file.metadata.original
+                    - var name = file.filename
+                    form(action='/files/del/' + id + '', method='post')
+                      button.btn.btn-danger(type='submit') Remove
+                .col-sm-6
+                  .card-footer
+                    form(action='files/download/' + name + '', method='post')
+                      button.btn.btn-primary
+                        i.fa.fa-download
+                          |  Download
+          else
+            p.description Nessuna Foto Caricata
+        .col-sm-2
+          form(action='/logout', enctype='multypart/form-data')
+            br
+            input(type='submit', value='LogOut', class='btn btn-primary')
+    .footer.text-center
+      a.up-arrow(href='#', data-toggle='tooltip', title='TO TOP')
+        span.glyphicon.glyphicon-chevron-up
+      br
+      br
+      |   
+      p
+        | Made By  
+        a(href='#', data-toggle='tooltip') FT
+
+    script
+      include ../js/scri.js
+    script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js', integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo', crossorigin='anonymous')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js', integrity='sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1', crossorigin='anonymous')
+    script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', integrity='sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM', crossorigin='anonymous')

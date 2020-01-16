@@ -1,0 +1,66 @@
+img{
+      width: 100%;
+    }
+span.file {
+  display: block;
+  padding: 1px 0px;
+}
+span.file a[href$=".docx"] {
+  background: url('http://image.chromefans.org/fileicons/format/docx.png') left center no-repeat;
+  padding-left: 20px;
+}
+span.file a[href$=".pdf"] {
+  background: url('https://static.spiceworks.com/images/how_to_steps/0005/9590/8a544ad4a4ee8c8b164ff38a3f700f5a35f3805cbf7f27d8ec0bb4e455e5dab1_icpdf.gif') left center no-repeat;
+  padding-left: 20px;
+}
+.navbar {
+    font-family: Montserrat, sans-serif;
+    margin-bottom: 0;
+    background-color: #2d2d30;
+    border: 0;
+    font-size: 11px !important;
+    letter-spacing: 4px;
+    opacity: 0.9;
+  }
+  .navbar li a, .navbar .navbar-brand { 
+    color: #d5d5d5 !important;
+  }
+  .navbar-nav li a:hover {
+    color: #fff !important;
+  }
+  .navbar-nav li.active a {
+    color: #fff !important;
+    background-color: #29292c !important;
+  }
+  .navbar-default .navbar-toggle {
+    border-color: transparent;
+  }
+  .nav-tabs li a {
+    color: #777;
+  }
+  .open .dropdown-toggle {
+    color: #fff;
+    background-color: #555 !important;
+  }
+  .dropdown-menu li a {
+    color: #000 !important;
+  }
+  .dropdown-menu li a:hover {
+    background-color: red !important;
+  }
+  body {
+    font: 400 15px/1.8 Lato, sans-serif;
+    color: #777;
+  }
+  footer {
+    background-color: #2d2d30;
+    color: #f5f5f5;
+    padding: 32px;
+  }
+  footer a {
+    color: #f5f5f5;
+  }
+  footer a:hover {
+    color: #777;
+    text-decoration: none;
+  }  

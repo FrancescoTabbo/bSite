@@ -1,0 +1,40 @@
+html
+  head
+    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
+  |   
+  body
+    br
+    .container
+      .row
+        .col-md-6.m-auto
+          .login-page
+            | Login
+            .form
+              form(action='/login', method='POST')
+                |
+                | #{msg}
+                |
+                br
+                input(type='text', placeholder='name', name ='nickname', id='nickname')
+                |       
+                input(type='password', placeholder='password', name='password', id='password')
+                |       
+                input(type='submit', value='Login', class='btn btn-success')
+                |       
+                p.message
+                  |
+              |     
+          .login-page
+            hr
+            | ...o Registrati
+            br
+            .form    
+              form(action='/register', method='POST')
+                input(type='text', placeholder='username', name ='nickname', id='nickname')
+                |       
+                input(type='password', placeholder='password', name='password', id='password')
+                |       
+                input(type='submit', value='Registrati', class='btn btn-danger')
+                |      
+                | #{err}
