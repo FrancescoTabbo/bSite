@@ -27,16 +27,21 @@ const {
 } = process.env
 
 const redirectLogin = (req, res, next) => {
+  console.log("redirect fa: " + req.session.userId)
     if(!req.session.userId){
+      console.log("redirect login")
         res.render('login', {msg: "effettua prima il login!"});
     } else{
+      
         next();
     }
 }
 const redirectIndex = (req, res, next) => {
     if(req.session.userId){
+      console.log("redirect index")
         res.render('index', {err: "esegui il logout!"});
     } else{
+      
         next();
     }
 }
@@ -60,7 +65,7 @@ app.use(session({
   }
 }));
 app.use((req,res,next) =>{
-    const { userId } = req.session;
+    const userId = req.session;
     console.log("user id " + userId + " session " + req.session.id)
     if(userId){
         const conn = mysql.createConnection({
@@ -74,7 +79,7 @@ app.use((req,res,next) =>{
             console.log("Connected!");
             conn.query("select * from User where id = ?",
             [
-                userId
+                userId.userId
             ],
             function(errr, result, fields) {
                 if (errr) throw errr;
@@ -147,7 +152,8 @@ const params = {
   '/multiple': 'files'
 };
 
-app.get('/', redirectLogin, function(req, res) {
+app.get('/', function(req, res) {
+  console.log(""req.session.userId)
     console.log("/preso")
   const { user } = res.locals; 
   console.log(req.session)
@@ -206,7 +212,7 @@ app.post('/login', redirectIndex, function(req, res) {
   conn.connect(function(err) {
     console.log("due");
     if (err) throw err;
-    console.log("Connected!");
+    console.log("login..Connected!");
     conn.query("select * from User where nome = ? AND password = ?",
       [
         nickname,
@@ -248,7 +254,7 @@ app.post('/register', redirectIndex, function(req, res) {
   conn.connect(function(err) {
     console.log("due");
     if (err) throw err;
-    console.log("Connected!");
+    console.log("register..Connected!");
     conn.query("INSERT INTO User(nome,password) VALUES(? ,?)",
     [
       nickname,
