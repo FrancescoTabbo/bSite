@@ -21,38 +21,23 @@ html
     style
       include ../css/sty.css
   |   
-  body(data-spy="scroll" data-target=".navbar" data-offset="50")
-    br
-    nav.navbar.navbar-default.navbar-fixed-top
+  body
+    nav.navbar.navbar-default
         .container-fluid
-          navbar-header
-            navbar-inner
-              button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#myNavbar', aria-expanded='false')
-                span.icon-bar
-                |         
-                span.icon-bar
-                |         
-                span.icon-bar
-              |       
-            |     
-            #myNavbar.navbar-collapse.collapse(aria-expanded='false', style='height: 1px;')
-              ul.nav.navbar-nav.navbar-right
-                li.active
-                  form(action='/',id ='maan', method='POST')
-                    a(href="") HOME
-                |         
-                li
-                  a(href='#band') BAND
-                |         
-                li
-                  a(href='#tour') TOUR
-                |         
-                li
-                  a(href='#contact') CONTACT
-                |         
-                li
-                  a(href='#')
-                    span.glyphicon.glyphicon-search
+            .navbar-header
+                button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+                    span.sr-only Toggle navigation
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            #navbar.navbar-collapse.collapse
+                ul.nav
+                    li.active
+                        a(href='/') Home
+                    li
+                        a(href='#') Guide
+                    li
+                        a(href='#') Altro
     .container
       .row
         .col-md-6.m-auto
@@ -81,16 +66,11 @@ html
                   - var url = file.filename
                   img(src='/image/' + url + '')
                 else
-                  | #{file.metadata.original}
-                  //
-                    span.file
-                      a(href='../someurl/print.pdf') Print PDF
-                    span.file
-                      a(href='../someurl/test.pdf') Test PDF
-                    p
-                      | Should show up a word icon
-                    span.file
-                      a(href='../someurl/word-test.docx') Word document
+                  - var url = file.filename
+                  .icons
+                    img(src = '/fileType/' + url + '', class='icon') 
+                    |
+                    | #{file.metadata.original}
               .row
                 .col-sm-6
                   .card-footer

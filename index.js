@@ -16,14 +16,41 @@ const methodOverride = require('method-override');
 const MongoClient = require('mongodb').MongoClient;
 const Grids = require('gridfs-stream');
 const app = express();
+const sessions = require("express-sessions");
+
+const {
+    NODE_ENV = 'development',
+    SESS_NAME = 'sid',
+    SESS_LIFETIME = TWO_HOURS,
+    SESSION_SECRET = 'ciao1234'
+} = process.env
+
+app.use(sessions({
+  cookieName: SESS_NAME, // cookie name dictates the key name added to the request object
+  resave: false,
+  saveUninitialized: false,
+  secret: SESSION_SECRET, // should be a large unguessable string
+  duration: 2 * 60 * 60 * 1000, // how long the session will stay valid in ms
+  activeDuration: 1000 * 60 * 5,  // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
+  cookie: {
+    ephemeral: false, // when true, cookie expires when the browser closes
+    httpOnly: true, // when true, cookie is not accessible from javascript
+    secure: true // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
+  }
+}));
 
 //middleware
 app.set('views', './views');
 app.set('view engine', 'pug');
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser()); 
 app.use(methodOverride('_method'));
+
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 const ObjectId = require('mongodb').ObjectId; 
 const dbName = 'test';
 
@@ -48,7 +75,7 @@ const uri = "mongodb+srv://admin:Admin1234@francesco-i5qce.mongodb.net/test?retr
 //{useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
 const conn = mongoose.createConnection(uri, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
+  useUnifiedTopology: true
 });
 
 let gfs;
@@ -117,21 +144,20 @@ app.get('/', function(req, res) {
           if (
             file.contentType === "image/png" ||
             file.contentType === "image/jpeg" ||
-            file.contentType === "image/jpg" ||
             file.contentType === "image/gif"
           ) {
             file.isImage = true;
           } else {
             file.isImage = false;
           }
-          if (
+          /*if (
             file.contentType === "video/mp4" ||
             file.contentType === "video/avi" ||
             file.contentType === "video/ogg"
           ) {
             file.isVideo = true;
           } else {
-            file.isImage = false;
+            file.isVideo = false;
           }
           if (
             file.contentType === "text/plain"
@@ -173,18 +199,12 @@ app.get('/', function(req, res) {
             file.isBat = false;
           }
           if (
-            file.contentType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            file.contentType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+            file.contentType === "application/msword"
           ) {
             file.isDocx = true;
           } else {
             file.isDocx = false;
-          }
-          if (
-            file.contentType === "application/msword"
-          ) {
-            file.isWord = true;
-          } else {
-            file.isWord = false;
           }
           if (
             file.contentType === "application/pdf"
@@ -215,7 +235,8 @@ app.get('/', function(req, res) {
             file.isXml = true;
           } else {
             file.isXml = false;
-          }   
+          }*/
+          console.log(file);
           return file;
         })
         .sort((a, b) => {
@@ -446,6 +467,57 @@ app.get("/files/:filename", (req, res) => {
     }else{
     res.render('login',{msg:"Effettua il login!"})
   }
+});
+
+app.get('/fileType/:filename', function(req,res){
+    var type = req.params.filename;
+    var ciao = type.substring(32);
+    console.log(type + " ciao: " + ciao);
+    if(ciao == ".xml" || ciao == ".XML" )
+    {
+        console.log("1 xml");
+        res.download("images/Xml.png");
+    }
+    if(ciao == ".bat" || ciao == ".BAT"){
+        console.log("1 bat");
+        res.download("images/bat.ico");
+    }
+    if(ciao == ".csv" || ciao == ".CSV"){
+        console.log("1 csv");
+        res.download("images/Csv.png");
+    }
+    if(ciao == ".docx" || ciao == ".DOCX"){
+        console.log("1 doc");
+        res.download("images/Doc.png");
+    }
+    if(ciao == ".xlsx" || ciao == ".XLSX"){
+        console.log("1 Excel");
+        res.download("images/Excel.png");
+    }
+    if(ciao == ".exe" || ciao == ".EXE" || ciao == ".jar" || ciao == ".JAR"){
+        console.log("1 exe o jar");
+        res.download("images/Exe.png");
+    }
+    if(ciao == ".pdf" || ciao == ".PDF"){
+        console.log("1 pdf");
+        res.download("images/Pdf.png");
+    }
+    if(ciao == ".rar" || ciao == ".RAR"){
+        console.log("1 rar");
+        res.download("images/rar.png");
+    }
+    if(ciao == ".txt" || ciao == ".TXT"){
+        console.log("1 txt");
+        res.download("images/Txt.png");
+    }
+    if(ciao == ".mp4" || ciao == ".MP4" || ciao == ".avi" || ciao == ".AVI" || ciao == ".ogg" || ciao == ".OGG"){
+        console.log("1 video");
+        res.download("images/Video.png");
+    }
+    if(ciao == ".zip" || ciao == ".ZIP"){
+        console.log("1 zip");
+        res.download("images/Zip.png");
+    }
 });
 
 app.get("/image/:filename", (req, res) => {

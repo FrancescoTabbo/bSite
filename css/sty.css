@@ -1,17 +1,12 @@
 img{
       width: 100%;
     }
-span.file {
-  display: block;
-  padding: 1px 0px;
+.icons {
+    height: 30px;
+    display: block;
 }
-span.file a[href$=".docx"] {
-  background: url('http://image.chromefans.org/fileicons/format/docx.png') left center no-repeat;
-  padding-left: 20px;
-}
-span.file a[href$=".pdf"] {
-  background: url('https://static.spiceworks.com/images/how_to_steps/0005/9590/8a544ad4a4ee8c8b164ff38a3f700f5a35f3805cbf7f27d8ec0bb4e455e5dab1_icpdf.gif') left center no-repeat;
-  padding-left: 20px;
+.icon{
+    width: 20px;
 }
 .navbar {
     font-family: Montserrat, sans-serif;
