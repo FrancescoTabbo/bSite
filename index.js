@@ -16,7 +16,8 @@ const methodOverride = require('method-override');
 const MongoClient = require('mongodb').MongoClient;
 const Grids = require('gridfs-stream');
 const app = express();
-const sessions = require("express-sessions");
+const session = require("express-session");
+const TWO_HOURS = 2 * 60 * 60 * 1000;
 
 const {
     NODE_ENV = 'development',
@@ -25,19 +26,20 @@ const {
     SESSION_SECRET = 'ciao1234'
 } = process.env
 
-app.use(sessions({
-  cookieName: SESS_NAME, // cookie name dictates the key name added to the request object
-  resave: false,
-  saveUninitialized: false,
-  secret: SESSION_SECRET, // should be a large unguessable string
-  duration: 2 * 60 * 60 * 1000, // how long the session will stay valid in ms
-  activeDuration: 1000 * 60 * 5,  // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
-  cookie: {
-    ephemeral: false, // when true, cookie expires when the browser closes
-    httpOnly: true, // when true, cookie is not accessible from javascript
-    secure: true // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
-  }
-}));
+const redirectLogin = (req, res, next) => {
+    if(!req.session.userId){
+        res.render('login', {msg: "effettua prima il login!"});
+    } else{
+        next();
+    }
+}
+const redirectIndex = (req, res, next) => {
+    if(req.session.userId){
+        res.render('index', {err: "esegui il logout!"});
+    } else{
+        next();
+    }
+}
 
 //middleware
 app.set('views', './views');
@@ -45,7 +47,45 @@ app.set('view engine', 'pug');
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser()); 
-app.use(methodOverride('_method'));
+app.use(methodOverride('_method')); 
+app.use(session({
+  cookieName: SESS_NAME, // cookie name dictates the key name added to the request object
+  resave: false,
+  saveUninitialized: false,
+  secret: SESSION_SECRET, // should be a large unguessable string
+  cookie: {
+    ephemeral: false, // when true, cookie expires when the browser closes
+    httpOnly: true, // when true, cookie is not accessible from javascript
+    secure: true // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
+  }
+}));
+app.use((req,res,next) =>{
+    const { userId } = req.session;
+    console.log("user id " + userId + " session " + req.session.id)
+    if(userId){
+        const conn = mysql.createConnection({
+            host: "remotemysql.com",
+            user: "W1Y2U1WmcR",
+            password: "r9SaoTN3hk",
+            database: "W1Y2U1WmcR"
+        });
+        conn.connect(function(err) {
+            if (err) throw err;
+            console.log("Connected!");
+            conn.query("select * from User where id = ?",
+            [
+                userId
+            ],
+            function(errr, result, fields) {
+                if (errr) throw errr;
+                    if (result.length != 0) {
+                        res.locals.user= result;
+                    }
+                });
+        });
+    }
+    next();
+});
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -53,23 +93,6 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 const ObjectId = require('mongodb').ObjectId; 
 const dbName = 'test';
-
-/*app.use(function(req, res, next){
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});*/
-
-/*app.use(function(req, res, next) { //allow cross origin requests
-    res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Credentials", true);
-    next();
-});*/
-
-//app.use('/', routes);
-//app.use('/users', users);
 
 const uri = "mongodb+srv://admin:Admin1234@francesco-i5qce.mongodb.net/test?retryWrites=true&w=majority";
 //{useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
@@ -124,9 +147,10 @@ const params = {
   '/multiple': 'files'
 };
 
-app.get('/', function(req, res) {
-  var ver = req.cookies['nome'];
-  if(ver){
+app.get('/', redirectLogin, function(req, res) {
+    console.log("/preso")
+  const { user } = res.locals; 
+  console.log(req.session)
     if(!gfs) {
     console.log("some error occured, check connection to db");
     res.send("some error occured, check connection to db");
@@ -150,92 +174,6 @@ app.get('/', function(req, res) {
           } else {
             file.isImage = false;
           }
-          /*if (
-            file.contentType === "video/mp4" ||
-            file.contentType === "video/avi" ||
-            file.contentType === "video/ogg"
-          ) {
-            file.isVideo = true;
-          } else {
-            file.isVideo = false;
-          }
-          if (
-            file.contentType === "text/plain"
-          ) {
-            file.isText = true;
-          } else {
-            file.isText = false;
-          }
-          if (
-            file.contentType === "application/x-zip-compressed" ||
-            file.contentType === "application/x-7z-compressed" ||
-            file.contentType === "application/zip"
-          ) {
-            file.isZip = true;
-          } else {
-            file.isZip = false;
-          }
-          if (
-            file.contentType === "application/x-msdownload"
-          ) {
-            file.isExe = true;
-          } else {
-            file.isExe = false;
-          }
-          if (
-            file.contentType === "application/vnd.ms-excel" ||
-            file.contentType === "video/avi" ||
-            file.contentType === "video/ogg"
-          ) {
-            file.isCsv = true;
-          } else {
-            file.isCsv = false;
-          }
-          if (
-            file.contentType === "application/octet-stream"
-          ) {
-            file.isBat = true;
-          } else {
-            file.isBat = false;
-          }
-          if (
-            file.contentType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-            file.contentType === "application/msword"
-          ) {
-            file.isDocx = true;
-          } else {
-            file.isDocx = false;
-          }
-          if (
-            file.contentType === "application/pdf"
-          ) {
-            file.isPdf = true;
-          } else {
-            file.isPdf = false;
-          }
-          if (
-            file.contentType === "application/x-rar-compressed"
-          ) {
-            file.isRar = true;
-          } else {
-            file.isRar = false;
-          } 
-          if (
-            file.contentType === "application/vnd.ms-excel" ||
-            file.contentType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          ) {
-            file.isExcel = true;
-          } else {
-            file.isExcel = false;
-          }
-          if (
-            file.contentType === "application/xml" ||
-            file.contentType === "text/xml"
-          ) {
-            file.isXml = true;
-          } else {
-            file.isXml = false;
-          }*/
           console.log(file);
           return file;
         })
@@ -247,23 +185,13 @@ app.get('/', function(req, res) {
         });
 
       return res.render("index", {
-        files: f, msg:"Ciao " + ver
+        files: f, msg:"Ciao " + user.nome
       });
     }
-    // return res.json(files);
   });
-    //res.render('index',{msg:"Bentornato "+ ver});
-  }else{
-    res.render('login');
-  }
 });
 
-app.post('/login', function(req, res) {
-  var ver = req.cookies['nome'];
-  console.log(ver);
-  if(ver){
-    res.redirect('/');
-  }else{
+app.post('/login', redirectIndex, function(req, res) {
   console.log("uno");
   console.log(req.body);
   const conn = mysql.createConnection({
@@ -274,8 +202,7 @@ app.post('/login', function(req, res) {
   });
   const nickname = req.body.nickname;
   const password = md5(req.body.password+
-  ")@Mpk=2!?b>!DRXf\g>{,YI/t.h]@-||%°<#Bri']^o_€+L}9;3GWx?/7&Vh.T5qx£#:(*");
-  const perm = 
+  ")@Mpk=2!?b>!DRXf\g>{,YI/t.h]@-||%°<#Bri']^o_€+L}9;3GWx?/7&Vh.T5qx£#:(*"); 
   conn.connect(function(err) {
     console.log("due");
     if (err) throw err;
@@ -292,19 +219,19 @@ app.post('/login', function(req, res) {
         console.log(req.query);
         if (result.length != 0) {
           console.log("quattro");
-          console.log();
-          res.cookie('nome', nickname, { maxAge: 900000, httpOnly: true, sameSite: true, secure:true });
-          res.cookie('per', result[0].perm, {maxAge: 900000, httpOnly: true, sameSite: true, secure:true}).redirect('/');
-          
+          console.log(result);
+          console.log(result[0].id);
+          req.session.userId = result[0].id;
+          console.log(req.session.userId);
+          res.redirect('/');
         } else {
           res.render('login',{msg:"nome o password sbagliato/i!"});
         }
       });
   });
-  }
 });
 
-app.post('/register', function(req, res) {
+app.post('/register', redirectIndex, function(req, res) {
   console.log("uno");
   console.log(req.body);
   const conn = mysql.createConnection({
@@ -342,9 +269,7 @@ app.post('/register', function(req, res) {
   });
 });
 
-app.get('/file/:filename', function(req, res){
-  var ver = req.cookies['nome'];
-  if(ver){
+app.get('/file/:filename', redirectLogin, function(req, res){
       console.log(gfs);
         /** First check if file exists */
         gfs.find({filename: req.params.filename}).toArray(function(err, files){
@@ -369,26 +294,14 @@ app.get('/file/:filename', function(req, res){
             res.json('File Not Found');
           }
     });
-  }else{
-    res.render('login',{msg:"Effettua il login!"})
-  }
 });
 
-app.post('/send',upload.single('file'),function(req, res){
-  var ver = req.cookies['nome'];
-  if(ver){
+app.post('/send', redirectLogin, upload.single('file'), function(req, res){
   console.log(req.file.filename);
-  //res.json({file:req.file});
   res.redirect('/');
-  }else{
-    res.render('login',{msg:"Effettua il login!"})
-  }
 });
 
-app.get("/files", (req, res) => {
-  var ver = req.cookies['nome'];
-  if(ver){
-
+app.get("/files", redirectLogin, (req, res) => {
   gfs.find().toArray((err, files) => {
     // check if files
     if (!files || files.length === 0) {
@@ -398,14 +311,9 @@ app.get("/files", (req, res) => {
     }
     return res.json(files);
   });
-  }else{
-    res.render('login',{msg:"Effettua il login!"})
-  }
 });
 
-app.post("/files/download/:name", (req, res) => {
-  var ver = req.cookies['nome'];
-  if(ver){
+app.post("/files/download/:name", redirectLogin, (req, res) => {
   var we = req.params.name;
   console.log(we);
   const file = gfs
@@ -422,14 +330,9 @@ app.post("/files/download/:name", (req, res) => {
       res.set('Content-Disposition', 'attachment; filename="' + files[0].metadata.original + '"');
       gfs.openDownloadStreamByName(files[0].filename).pipe(res);
     });
-    }else{
-    res.render('login',{msg:"Effettua il login!"})
-  }
 });
 
-app.get("/files/:filename", (req, res) => {
-  var ver = req.cookies['nome'];
-  if(ver){
+app.get("/files/:filename", redirectLogin,(req, res) => {
   console.log("richiesta");
   const file = gfs
   .find(
@@ -442,8 +345,6 @@ app.get("/files/:filename", (req, res) => {
           err: "no files exist"
         });
       }
-
-      //gridfs = Grid(conn.db, mongo);
 
     // write file
     writeStream = gfs.createWriteStream(files.filename);
@@ -464,12 +365,9 @@ app.get("/files/:filename", (req, res) => {
         });
     });
     });
-    }else{
-    res.render('login',{msg:"Effettua il login!"})
-  }
 });
 
-app.get('/fileType/:filename', function(req,res){
+app.get('/fileType/:filename', redirectLogin, function(req,res){
     var type = req.params.filename;
     var ciao = type.substring(32);
     console.log(type + " ciao: " + ciao);
@@ -520,9 +418,7 @@ app.get('/fileType/:filename', function(req,res){
     }
 });
 
-app.get("/image/:filename", (req, res) => {
-  var ver = req.cookies['nome'];
-  if(ver){
+app.get("/image/:filename", redirectLogin, (req, res) => {
   // console.log('id', req.params.id)
   const file = gfs
     .find({
@@ -536,67 +432,30 @@ app.get("/image/:filename", (req, res) => {
       }
       gfs.openDownloadStreamByName(req.params.filename).pipe(res);
     });
-  }else{
-    res.render('login',{msg:"Effettua il login!"})
-  }
 });
-
-
 
 // files/del/:id
 // Delete chunks from the db
-app.post("/files/del/:id", (req, res) => {
-  var ver = req.cookies['nome'];
-  if(ver){
+app.post("/files/del/:id", redirectLogin,(req, res) => {
     gfs.delete(new mongoose.Types.ObjectId(req.params.id), (err, data) => {
       if (err) return res.status(404).json({ err: err.message });
       res.redirect("/");
     });
-  }else{
-    res.render('login',{msg:"Effettua il login!"})
-  }
 });
-
-
-/*app.post("/files/download/:id", (req, res) => {
-  console.log(req.params.id);
-  gfs.find(new mongoose.Types.ObjectId(req.params.id), (err, data) => {
-      console.log("uno"); 
-      if (err) {
-          return res.status(400).send(err);
-      }
-      else if (!file) {
-          return res.status(404).send('Error on the database looking for the file.');
-      }
-      if(file.metadata.original){
-        console.log(file.metadata.original);
-      }else{
-        console.log("errore metadata");
-      }
-      
-      res.set('Content-Type', file.contentType);
-      res.set('Content-Disposition', 'attachment; filename="' + file.metadata.original + '"');
-
-      var readstream = gfs.createReadStream({
-        _id: req.params.id,
-        root: 'resume'
-      });
-
-      readstream.on("error", function(err) { 
-          console.log("errore readstream");
-          res.end();
-      });
-      readstream.pipe(res);
-    });
-});*/
 
 app.post('/reload', function(req,res){
   res.redirect('/');
 });
 
-app.get('/logout',function(req, res){
-  res.cookie('nome', '',{ maxAge: 0, httpOnly: true , secure : true});
-  res.cookie('per', '', { maxAge: 0, httpOnly: true , secure : true}).render('login', {msg:"Logout effettuato"});
+app.get('/logout', redirectLogin, function(req, res){
+  req.session.destroy(err => {
+      if (err){
+          return res.redirect('/index');
+      }
+      res.clearCookie(SESS_NAME);
+      res.cookie('nome', '',{ maxAge: 0, httpOnly: true , secure : true});
+      res.cookie('per', '', { maxAge: 0, httpOnly: true , secure : true}).render('login', {msg:"Logout effettuato"});
+  });
 });
 
 app.set('port', process.env.PORT || 3000);
