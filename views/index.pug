@@ -88,7 +88,7 @@ html
           else
             p.description Nessuna Foto Caricata
         .col-sm-2
-          form(action='/logout', enctype='multypart/form-data')
+          form(action='/logout', method='POST')
             br
             input(type='submit', value='LogOut', class='btn btn-primary')
     .footer.text-center

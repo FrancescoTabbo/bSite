@@ -17,36 +17,19 @@ const MongoClient = require('mongodb').MongoClient;
 const Grids = require('gridfs-stream');
 const app = express();
 const session = require("express-session");
-const TWO_HOURS = 2 * 60 * 60 * 1000;
+const ONE_HOUR = 60 *60 * 1000;
 
 const {
     NODE_ENV = 'development',
     SESS_NAME = 'sid',
-    SESS_LIFETIME = TWO_HOURS,
+    SESS_LIFETIME = ONE_HOUR,
     SESSION_SECRET = 'ciao1234'
 } = process.env
 
-const redirectLogin = (req, res, next) => {
-  console.log("redirect fa: " + req.session.userId)
-    if(!req.session.userId){
-      console.log("redirect login")
-        res.render('login', {msg: "effettua prima il login!"});
-    } else{
-      
-        next();
-    }
-}
-const redirectIndex = (req, res, next) => {
-    if(req.session.userId){
-      console.log("redirect index")
-        res.render('index', {err: "esegui il logout!"});
-    } else{
-      
-        next();
-    }
-}
+const IN_PROD = NODE_ENV === "production";
 
 //middleware
+//app.set('trust proxy', 1);
 app.set('views', './views');
 app.set('view engine', 'pug');
 app.use(express.json());
@@ -54,20 +37,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser()); 
 app.use(methodOverride('_method')); 
 app.use(session({
-  cookieName: SESS_NAME, // cookie name dictates the key name added to the request object
+  name: SESS_NAME, // cookie name dictates the key name added to the request object
   resave: false,
   saveUninitialized: false,
   secret: SESSION_SECRET, // should be a large unguessable string
   cookie: {
+    maxAge: SESS_LIFETIME,
     ephemeral: false, // when true, cookie expires when the browser closes
     httpOnly: true, // when true, cookie is not accessible from javascript
-    secure: true // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
+    secure: 'auto'
+    // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
   }
 }));
 app.use((req,res,next) =>{
-    const userId = req.session;
-    console.log("user id " + userId + " session " + req.session.id)
+    const {userId} = req.session;
+    console.log(/*"user id " + userId.id + */" session " + req.session.id + "userid session " + req.session.userId)
     if(userId){
+        console.log("controllo userId riuscito inizio contorllo db sql")
         const conn = mysql.createConnection({
             host: "remotemysql.com",
             user: "W1Y2U1WmcR",
@@ -76,17 +62,18 @@ app.use((req,res,next) =>{
         });
         conn.connect(function(err) {
             if (err) throw err;
-            console.log("Connected!");
+            console.log("sql Connected!");
             conn.query("select * from User where id = ?",
             [
                 userId.userId
             ],
             function(errr, result, fields) {
-                if (errr) throw errr;
-                    if (result.length != 0) {
-                        res.locals.user= result;
-                    }
-                });
+              if (errr) throw errr;
+              if (result.length != 0) {
+                console.log("id user result " + result[0].id)
+                res.locals.user= result;
+              }
+            });
         });
     }
     next();
@@ -109,10 +96,12 @@ const conn = mongoose.createConnection(uri, {
 let gfs;
 
 conn.once("open", () => {
+  console.log("inizializzazione gfs")
   // init stream
   gfs = new mongoose.mongo.GridFSBucket(conn.db, {
     bucketName: "uploads"
   });
+  console.log("gfs creato! "+ gfs)
 });
 
 const storage = new GridFsStorage({
@@ -152,11 +141,35 @@ const params = {
   '/multiple': 'files'
 };
 
-app.get('/', function(req, res) {
-  console.log(""req.session.userId)
+const redirectLogin = (req, res, next) => {
+  console.log(req.session)
+  console.log(req.session.userId)
+  console.log("redirect fa: " + req.session.userId)
+    if(!req.session.userId){
+      console.log("redirect login")
+        res.render('login', {msg: "effettua il login!"});
+    } else{
+      
+        next();
+    }
+}
+const redirectIndex = (req, res, next) => {
+    if(req.session.userId){
+      console.log("redirect index")
+        res.render('index', {err: "esegui il logout!"});
+    } else{
+      
+        next();
+    }
+}
+
+app.get('/', redirectLogin, function(req, res) {
+  console.log("gfs == " + gfs)
+  console.log("userId == " + req.session.userId)
     console.log("/preso")
   const { user } = res.locals; 
   console.log(req.session)
+  console.log(res.locals)
     if(!gfs) {
     console.log("some error occured, check connection to db");
     res.send("some error occured, check connection to db");
@@ -191,7 +204,7 @@ app.get('/', function(req, res) {
         });
 
       return res.render("index", {
-        files: f, msg:"Ciao " + user.nome
+        files: f, msg:"Ciao "
       });
     }
   });
@@ -222,22 +235,21 @@ app.post('/login', redirectIndex, function(req, res) {
         if (errr) throw errr;
         console.log("tre");
         console.log(req.body);
-        console.log(req.query);
         if (result.length != 0) {
           console.log("quattro");
           console.log(result);
           console.log(result[0].id);
           req.session.userId = result[0].id;
           console.log(req.session.userId);
-          res.redirect('/');
+          return res.redirect('/');
         } else {
-          res.render('login',{msg:"nome o password sbagliato/i!"});
+          return res.render('login',{msg:"nome o password sbagliato/i!"});
         }
       });
   });
 });
 
-app.post('/register', redirectIndex, function(req, res) {
+/*app.post('/register', redirectIndex, function(req, res) {
   console.log("uno");
   console.log(req.body);
   const conn = mysql.createConnection({
@@ -273,7 +285,7 @@ app.post('/register', redirectIndex, function(req, res) {
       }
     });
   });
-});
+});*/
 
 app.get('/file/:filename', redirectLogin, function(req, res){
       console.log(gfs);
@@ -453,19 +465,17 @@ app.post('/reload', function(req,res){
   res.redirect('/');
 });
 
-app.get('/logout', redirectLogin, function(req, res){
+app.post('/logout', redirectLogin, function(req, res){
   req.session.destroy(err => {
       if (err){
           return res.redirect('/index');
       }
-      res.clearCookie(SESS_NAME);
-      res.cookie('nome', '',{ maxAge: 0, httpOnly: true , secure : true});
-      res.cookie('per', '', { maxAge: 0, httpOnly: true , secure : true}).render('login', {msg:"Logout effettuato"});
+      res.clearCookie(SESS_NAME).render('login', {msg:"Logout effettuato"});
   });
 });
 
 app.set('port', process.env.PORT || 3000);
 
 const server = app.listen(app.get('port'), function() {
-  debug('Express server listening on port ' + server.address().port);
+    debug('Express server listening on port ' + server.address().port);
 });
