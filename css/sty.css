@@ -44,7 +44,7 @@ img{
     background-color: red !important;
   }
   body {
-    font: 400 15px/1.8 Lato, sans-serif;
+    font: 400 19px/1.8 Lato, sans-serif;
     color: #777;
   }
   footer {
@@ -59,3 +59,6 @@ img{
     color: #777;
     text-decoration: none;
   }  
+btn btn-primary{
+    font-size: 20px;
+}

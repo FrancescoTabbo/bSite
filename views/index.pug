@@ -72,13 +72,14 @@ html
                     |
                     | #{file.metadata.original}
               .row
-                .col-sm-6
-                  .card-footer
-                    - var id = file._id
-                    - var nome = file.metadata.original
-                    - var name = file.filename
-                    form(action='/files/del/' + id + '', method='post')
-                      button.btn.btn-danger(type='submit') Remove
+                if per == 1
+                  .col-sm-6
+                    .card-footer
+                      - var id = file._id
+                      - var nome = file.metadata.original
+                      - var name = file.filename
+                      form(action='/files/del/' + id + '', method='post')
+                        button.btn.btn-danger(type='submit') Remove
                 .col-sm-6
                   .card-footer
                     form(action='files/download/' + name + '', method='post')

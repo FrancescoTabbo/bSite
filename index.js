@@ -26,6 +26,13 @@ const {
     SESSION_SECRET = 'ciao1234'
 } = process.env
 
+const conn = mysql.createConnection({
+            host: "remotemysql.com",
+            user: "W1Y2U1WmcR",
+            password: "r9SaoTN3hk",
+            database: "W1Y2U1WmcR"
+        });
+
 const IN_PROD = NODE_ENV === "production";
 
 //middleware
@@ -49,35 +56,6 @@ app.use(session({
     // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
   }
 }));
-app.use((req,res,next) =>{
-    const {userId} = req.session;
-    console.log(/*"user id " + userId.id + */" session " + req.session.id + "userid session " + req.session.userId)
-    if(userId){
-        console.log("controllo userId riuscito inizio contorllo db sql")
-        const conn = mysql.createConnection({
-            host: "remotemysql.com",
-            user: "W1Y2U1WmcR",
-            password: "r9SaoTN3hk",
-            database: "W1Y2U1WmcR"
-        });
-        conn.connect(function(err) {
-            if (err) throw err;
-            console.log("sql Connected!");
-            conn.query("select * from User where id = ?",
-            [
-                userId.userId
-            ],
-            function(errr, result, fields) {
-              if (errr) throw errr;
-              if (result.length != 0) {
-                console.log("id user result " + result[0].id)
-                res.locals.user= result;
-              }
-            });
-        });
-    }
-    next();
-});
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -88,17 +66,17 @@ const dbName = 'test';
 
 const uri = "mongodb+srv://admin:Admin1234@francesco-i5qce.mongodb.net/test?retryWrites=true&w=majority";
 //{useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
-const conn = mongoose.createConnection(uri, {
+const connM = mongoose.createConnection(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 
 let gfs;
 
-conn.once("open", () => {
+connM.once("open", () => {
   console.log("inizializzazione gfs")
   // init stream
-  gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+  gfs = new mongoose.mongo.GridFSBucket(connM.db, {
     bucketName: "uploads"
   });
   console.log("gfs creato! "+ gfs)
@@ -141,6 +119,44 @@ const params = {
   '/multiple': 'files'
 };
 
+const check = (req,res,next) =>{
+    const {userId} = req.session;
+    console.log("check userID:  " + userId)
+    console.log(/*"user id " + userId.id + */" session " + req.session.id + "userid session " + req.session.userId)
+    if(userId){
+        console.log("controllo userId riuscito inizio contorllo db sql")
+        const conn = mysql.createConnection({
+            host: "remotemysql.com",
+            user: "W1Y2U1WmcR",
+            password: "r9SaoTN3hk",
+            database: "W1Y2U1WmcR"
+        });
+        console.log("inizio query")
+        conn.ping(function (err) {
+            if (err) throw err;
+            console.log('Server responded to ping');
+        });
+        conn.connect(function(err) {
+            console.log("connesso sql")
+            if (err) throw err;
+            console.log("sql Connected!");
+            conn.query("select * from User where id = ?",
+            [
+                userId
+            ],
+            function(errr, result, fields) {
+              if (errr) throw errr;
+              if (result.length != 0) {
+                console.log("id user result " + result[0].id)
+                res.locals.user= result;
+                console.log("locals:  " + req.locals.user)
+              }
+            });
+        });
+    }
+    next();
+};
+
 const redirectLogin = (req, res, next) => {
   console.log(req.session)
   console.log(req.session.userId)
@@ -167,9 +183,9 @@ app.get('/', redirectLogin, function(req, res) {
   console.log("gfs == " + gfs)
   console.log("userId == " + req.session.userId)
     console.log("/preso")
-  const { user } = res.locals; 
-  console.log(req.session)
-  console.log(res.locals)
+  //const { user } = res.locals; 
+  console.log("session:  " + req.session)
+  console.log("local:  " + req.locals)
     if(!gfs) {
     console.log("some error occured, check connection to db");
     res.send("some error occured, check connection to db");
@@ -193,7 +209,6 @@ app.get('/', redirectLogin, function(req, res) {
           } else {
             file.isImage = false;
           }
-          console.log(file);
           return file;
         })
         .sort((a, b) => {
@@ -204,7 +219,7 @@ app.get('/', redirectLogin, function(req, res) {
         });
 
       return res.render("index", {
-        files: f, msg:"Ciao "
+        files: f, per: req.session.userPe, msg:"Ciao " + req.session.userNo
       });
     }
   });
@@ -213,12 +228,6 @@ app.get('/', redirectLogin, function(req, res) {
 app.post('/login', redirectIndex, function(req, res) {
   console.log("uno");
   console.log(req.body);
-  const conn = mysql.createConnection({
-    host: "remotemysql.com",
-    user: "W1Y2U1WmcR",
-    password: "r9SaoTN3hk",
-    database: "W1Y2U1WmcR"
-  });
   const nickname = req.body.nickname;
   const password = md5(req.body.password+
   ")@Mpk=2!?b>!DRXf\g>{,YI/t.h]@-||%°<#Bri']^o_€+L}9;3GWx?/7&Vh.T5qx£#:(*"); 
@@ -240,6 +249,8 @@ app.post('/login', redirectIndex, function(req, res) {
           console.log(result);
           console.log(result[0].id);
           req.session.userId = result[0].id;
+          req.session.userNo = result[0].nome;
+          req.session.userPe = result[0].perm;
           console.log(req.session.userId);
           return res.redirect('/');
         } else {
