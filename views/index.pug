@@ -22,7 +22,7 @@ html
       include ../css/sty.css
   |   
   body
-    nav.navbar.navbar-default
+    //nav.navbar.navbar-default
         .container-fluid
             .navbar-header
                 button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
@@ -38,6 +38,18 @@ html
                         a(href='#') Guide
                     li
                         a(href='#') Altro
+                ul.nav.navbar-nav.navbar-right  
+                    li
+                        span.glyphicon.glyphicon-search
+    .topnav
+      a.active(href='/') Home
+      |   
+      a(href='#') Guide
+      |   
+      a(href='#') Contact
+      |
+      form(action='/cerca', method='GET')   
+        input(type='text', placeholder='Search..', name='ricerca')
     .container
       .row
         .col-md-6.m-auto
@@ -59,39 +71,78 @@ html
           hr
           br
           | #{err}
-          if files
-            each file in files
-              .card.card-bosy.mb3
-                if file.isImage
-                  - var url = file.filename
-                  img(src='/image/' + url + '')
-                else
-                  - var url = file.filename
-                  .icons
-                    img(src = '/fileType/' + url + '', class='icon') 
-                    |
-                    | #{file.metadata.original}
-              .row
-                if per == 1
+          if searchR
+            each file in searchR
+              if file !== undefined
+                .card.card-bosy.mb3
+                  if file.isImage
+                    - var url = file.filename
+                    img(src='/image/' + url + '')
+                  else
+                    - var url = file.filename
+                    .icons
+                      img(src = '/fileType/' + url + '', class='icon') 
+                      |
+                      | #{file.metadata.original}
+                  .row
+                    if per == 1
+                      .col-sm-6
+                        .card-footer
+                          - var id = file._id
+                          - var nome = file.metadata.original
+                          - var name = file.filename
+                          form(action='/files/del/' + id + '', method='post')
+                            button.btn.btn-danger
+                              i.glyphicon.glyphicon-ban-circle
+                                |  Remove
+                    .col-sm-6
+                      .card-footer
+                        form(action='files/download/' + name + '', method='post')
+                          button.btn.btn-primary
+                            i.fa.fa-download
+                              |  Download                
+          else  
+            if files
+              each file in files
+                .card.card-bosy.mb3
+                  if file.isImage
+                    - var url = file.filename
+                    img(src='/image/' + url + '')
+                  else
+                    - var url = file.filename
+                    .icons
+                      img(src = '/fileType/' + url + '', class='icon') 
+                      |
+                      | #{file.metadata.original}
+                .row
+                  if per == 1
+                    .col-sm-6
+                      .card-footer
+                        - var id = file._id
+                        - var nome = file.metadata.original
+                        - var name = file.filename
+                        form(action='/files/del/' + id + '', method='post')
+                          button.btn.btn-danger
+                            i.glyphicon.glyphicon-ban-circle
+                              |  Remove
                   .col-sm-6
                     .card-footer
-                      - var id = file._id
-                      - var nome = file.metadata.original
-                      - var name = file.filename
-                      form(action='/files/del/' + id + '', method='post')
-                        button.btn.btn-danger(type='submit') Remove
-                .col-sm-6
-                  .card-footer
-                    form(action='files/download/' + name + '', method='post')
-                      button.btn.btn-primary
-                        i.fa.fa-download
-                          |  Download
-          else
-            p.description Nessuna Foto Caricata
-        .col-sm-2
-          form(action='/logout', method='POST')
-            br
-            input(type='submit', value='LogOut', class='btn btn-primary')
+                      form(action='files/download/' + name + '', method='post')
+                        button.btn.btn-primary
+                          i.fa.fa-download
+                            |  Download
+            else
+              p.description Nessuna Foto Caricata
+          .col-sm-2
+            form(action='/logout', method='POST')
+              br
+              input(type='submit', value='LogOut', class='btn btn-primary')
+          if searchR
+            .col-sm-8
+            .col-sm-2
+              form(action='/')
+                br
+                input(type='submit', value='Annulla', class='btn btn-primary')
     .footer.text-center
       a.up-arrow(href='#', data-toggle='tooltip', title='TO TOP')
         span.glyphicon.glyphicon-chevron-up

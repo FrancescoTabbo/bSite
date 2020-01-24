@@ -1,0 +1,97 @@
+html
+  head
+    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css")
+    title File Transfer
+    |   
+    meta(charset='utf-8')
+    |   
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    |   
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css')
+    |   
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js')
+    |   
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+    |   
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js')
+    |
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")
+    style
+      include ../css/sty.css
+  |   
+  body
+    nav.navbar.navbar-default
+        .container-fluid
+            .navbar-header
+                button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+                    span.sr-only Toggle navigation
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+            #navbar.navbar-collapse.collapse
+                ul.nav
+                    li.active
+                        a(href='/') Home
+                    li
+                        a(href='#') Guide
+                    li
+                        a(href='#') Altro
+    .container
+      .row
+        .col-md-6.m-auto
+          br
+          hr
+          br
+          | #{err}
+          if searchR
+            //each file in searchR
+            .card.card-bosy.mb3
+              if searchR[0].isImage
+                - var url = searchR[0].filename
+                img(src='/image/' + url + '')
+              else
+                - var url = searchR[0].filename
+                .icons
+                  img(src = '/fileType/' + url + '', class='icon') 
+                  |
+                  | #{searchR[0].metadata.original}
+              .row
+                if per == 1
+                  .col-sm-6
+                    .card-footer
+                      - var id = searchR[0]._id
+                      - var nome = searchR[0].metadata.original
+                      - var name = searchR[0].filename
+                      form(action='/files/del/' + id + '', method='post')
+                        button.btn.btn-danger
+                          i.glyphicon.glyphicon-ban-circle
+                            |  Remove
+                .col-sm-6
+                  .card-footer
+                    form(action='files/download/' + name + '', method='post')
+                      button.btn.btn-primary
+                        i.fa.fa-download
+                          |  Download
+          else
+            p.description Nessuna Foto Caricata
+          .col-sm-2
+            form(action='/logout', method='POST')
+              br
+              input(type='submit', value='LogOut', class='btn btn-primary')
+    .footer.text-center
+      a.up-arrow(href='#', data-toggle='tooltip', title='TO TOP')
+        span.glyphicon.glyphicon-chevron-up
+      br
+      br
+      |   
+      p
+        | Made By  
+        a(href='#', data-toggle='tooltip') FT
+
+    script
+      include ../js/scri.js
+    script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js', integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo', crossorigin='anonymous')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js', integrity='sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1', crossorigin='anonymous')
+    script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', integrity='sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM', crossorigin='anonymous')

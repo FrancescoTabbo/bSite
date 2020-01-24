@@ -26,7 +26,7 @@ const {
     SESSION_SECRET = 'ciao1234'
 } = process.env
 
-const conn = mysql.createConnection({
+const conn = mysql.createPool({
             host: "remotemysql.com",
             user: "W1Y2U1WmcR",
             password: "r9SaoTN3hk",
@@ -56,6 +56,20 @@ app.use(session({
     // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
   }
 }));
+//app.enable('trust proxy');
+/*app.use (function (req, res, next) {
+  console.log("protocol " + req.protocol)
+  console.log("secure " + req.secure)
+  console.log("header " + req.headers.host)
+  console.log("url " + req.url)
+        if (req.secure) {
+                // request was via https, so do no special handling
+                next();
+        } else {
+                // request was via http, so redirect to https
+                res.redirect('https://' + req.headers.host + req.url);
+        }
+});*/
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -125,7 +139,7 @@ const check = (req,res,next) =>{
     console.log(/*"user id " + userId.id + */" session " + req.session.id + "userid session " + req.session.userId)
     if(userId){
         console.log("controllo userId riuscito inizio contorllo db sql")
-        const conn = mysql.createConnection({
+        const conn = mysql.createPool({
             host: "remotemysql.com",
             user: "W1Y2U1WmcR",
             password: "r9SaoTN3hk",
@@ -217,7 +231,8 @@ app.get('/', redirectLogin, function(req, res) {
             new Date(a["uploadDate"]).getTime()
           );
         });
-
+      console.log(f)
+      console.log("f  :"+f[0].filename)
       return res.render("index", {
         files: f, per: req.session.userPe, msg:"Ciao " + req.session.userNo
       });
@@ -231,16 +246,17 @@ app.post('/login', redirectIndex, function(req, res) {
   const nickname = req.body.nickname;
   const password = md5(req.body.password+
   ")@Mpk=2!?b>!DRXf\g>{,YI/t.h]@-||%°<#Bri']^o_€+L}9;3GWx?/7&Vh.T5qx£#:(*"); 
-  conn.connect(function(err) {
+  conn.getConnection(function (err, connection) {
     console.log("due");
     if (err) throw err;
     console.log("login..Connected!");
-    conn.query("select * from User where nome = ? AND password = ?",
+    connection.query("select * from User where nome = ? AND password = ?",
       [
         nickname,
         password
       ],
       function(errr, result, fields) {
+        connection.release();
         if (errr) throw errr;
         console.log("tre");
         console.log(req.body);
@@ -359,6 +375,54 @@ app.post("/files/download/:name", redirectLogin, (req, res) => {
       res.set('Content-Disposition', 'attachment; filename="' + files[0].metadata.original + '"');
       gfs.openDownloadStreamByName(files[0].filename).pipe(res);
     });
+});
+
+app.get("/cerca", redirectLogin, (req,res) => {
+  const ricerca = req.query.ricerca;
+  console.log(ricerca)
+  const file = gfs
+    .find()
+    .toArray((err, files) => {
+      // check if files
+      console.log("ricerca files")
+    if (!files || files.length === 0) {
+      return res.render("index", {
+        search: false , err: "nessun file trovato"
+      });
+    } else {
+      const s = files
+        .map(file => {
+          if (
+            file.contentType === "image/png" ||
+            file.contentType === "image/jpeg" ||
+            file.contentType === "image/gif"
+          ) {
+            file.isImage = true;
+          } else {
+            file.isImage = false;
+          }
+          if (
+            file.metadata.original.match(new RegExp(ricerca,"i")) 
+          )
+          return file;
+        })
+        .sort((a, b) => {
+          return (
+            new Date(b["uploadDate"]).getTime() -
+            new Date(a["uploadDate"]).getTime()
+          );
+        });
+        console.log(s)
+        console.log("inzio loop")
+        for(i=0;i>=s.length;i++){
+          console.log("s:  "+s[i].metadata.original)
+        }
+      return res.render("index", {
+        searchR: s, per: req.session.userPe, msg:"Ciao " + req.session.userNo
+      });
+    }
+    });
+
 });
 
 app.get("/files/:filename", redirectLogin,(req, res) => {
