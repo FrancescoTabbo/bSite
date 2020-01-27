@@ -54,25 +54,29 @@ html
     .container
       .row
         .col-md-6.m-auto
-          if !searchR
-            form(action='/send', method='POST', enctype='multipart/form-data')
-              h3(class='text-center display-4 my-4') #{msg}
-              .custom-file.mb-3
-                |
-                label(for='file', class='custom-file-label') Scegli il File
-                br
-                input(type='file', ngf-select='', ng-model='exFile', name='file', id = 'file', class='custom-file-input', required=' ')
-                script
-                  include ../js/scri.js
-                |       
-                | #{ok}
-                br
-                |       
-                input(type='submit', value='Carica', class='btn btn-primary btn-block')
+          if !err
+            if !searchR
+              form(action='/send', method='POST', enctype='multipart/form-data')
+                h3(class='text-center display-4 my-4') #{msg}
+                .custom-file.mb-3
+                  |
+                  label(for='file', class='custom-file-label') Scegli il File
+                  br
+                  input(type='file', ngf-select='', ng-model='exFile', name='file', id = 'file', class='custom-file-input', required=' ')
+                  script
+                    include ../js/scri.js
+                  |       
+                  | #{ok}
+                  br
+                  |       
+                  input(type='submit', value='Carica', class='btn btn-primary btn-block')
           br
-          hr
+          if !err
+            hr
           br
           | #{err}
+          if err
+            hr
           if searchR
             each file in searchR
               if file !== undefined
@@ -134,7 +138,8 @@ html
                           i.fa.fa-download
                             |  Download
             else
-              p.description Nessuna Foto Caricata
+              if !err
+                p.description Nessuna Foto Caricata
           .col-sm-2
             form(action='/logout', method='POST')
               br
@@ -146,8 +151,10 @@ html
                 br
                 input(type='submit', value='Annulla', class='btn btn-primary')
     .footer.text-center
-      a.up-arrow(href='#', data-toggle='tooltip', title='TO TOP')
-        span.glyphicon.glyphicon-chevron-up
+      if !err
+        hr
+        a.up-arrow(href='#', data-toggle='tooltip', title='TO TOP')
+          span.glyphicon.glyphicon-chevron-up
       br
       br
       |   

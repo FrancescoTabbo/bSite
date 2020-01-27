@@ -19,6 +19,24 @@ const app = express();
 const session = require("express-session");
 const ONE_HOUR = 60 *60 * 1000;
 
+
+/* Configurazione HTTPS:
+const fs = require('fs');
+const https = require('https');
+const hostname = 'sito.com';
+const httpsPort = 443;
+const httpsOptions = {
+  cert: fs.readFileSync('./ssl/certificatoo.crt'),
+  ca: fs.readFileSync('./ssl/example.ca-bundle'),
+  key: fs.readFile('./ssl/chiave.key')
+};
+
+const httpsServer = https.createServer(httpsOptions, app);
+
+httpsServer.listen(httpsPort, hostname);
+*/
+
+
 const {
     NODE_ENV = 'development',
     SESS_NAME = 'sid',
@@ -52,12 +70,16 @@ app.use(session({
     maxAge: SESS_LIFETIME,
     ephemeral: false, // when true, cookie expires when the browser closes
     httpOnly: true, // when true, cookie is not accessible from javascript
+    sameSite: true,
     secure: 'auto'
     // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
   }
 }));
+
 //app.enable('trust proxy');
-/*app.use (function (req, res, next) {
+
+/* CONFIGUARZIONE HTTPS PER RE-INDIRIZZARE SU HTTPS DA HTTP
+app.use (function (req, res, next) {
   console.log("protocol " + req.protocol)
   console.log("secure " + req.secure)
   console.log("header " + req.headers.host)
@@ -69,7 +91,8 @@ app.use(session({
                 // request was via http, so redirect to https
                 res.redirect('https://' + req.headers.host + req.url);
         }
-});*/
+});
+*/
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -133,44 +156,7 @@ const params = {
   '/multiple': 'files'
 };
 
-const check = (req,res,next) =>{
-    const {userId} = req.session;
-    //console.log("check userID:  " + userId)
-    //console.log(/*"user id " + userId.id + */" session " + req.session.id + "userid session " + req.session.userId)
-    if(userId){
-        //console.log("controllo userId riuscito inizio contorllo db sql")
-        const conn = mysql.createPool({
-            host: "remotemysql.com",
-            user: "W1Y2U1WmcR",
-            password: "r9SaoTN3hk",
-            database: "W1Y2U1WmcR"
-        });
-        //console.log("inizio query")
-        conn.ping(function (err) {
-            if (err) throw err;
-            console.log('Server responded to ping');
-        });
-        conn.connect(function(err) {
-            console.log("connesso sql")
-            if (err) throw err;
-            console.log("sql Connected!");
-            conn.query("select * from User where id = ?",
-            [
-                userId
-            ],
-            function(errr, result, fields) {
-              if (errr) throw errr;
-              if (result.length != 0) {
-                //console.log("id user result " + result[0].id)
-                res.locals.user= result;
-                //console.log("locals:  " + req.locals.user)
-              }
-            });
-        });
-    }
-    next();
-};
-
+// @desc "middleware" di reindirizzamento al login
 const redirectLogin = (req, res, next) => {
   //console.log(req.session)
   //console.log(req.session.userId)
@@ -183,6 +169,8 @@ const redirectLogin = (req, res, next) => {
         next();
     }
 }
+
+// @desc "middleware" di reindirizzamento alla homepage
 const redirectIndex = (req, res, next) => {
     if(req.session.userId){
       //console.log("redirect index")
@@ -193,13 +181,52 @@ const redirectIndex = (req, res, next) => {
     }
 }
 
-app.get('/', redirectLogin, function(req, res) {
+// @desc "middleware" di controllo session
+const check = (req,res,next) =>{
+  const {userId} = req.session;
+  console.log("hey")
+  console.log("user id: "+ userId)
+
+  //console.log("check userID:  " + userId)
+  //console.log(/*"user id " + userId.id + */" session " + req.session.id + "userid session " + req.session.userId)
+  if(userId){
+    console.log(userId)
+    console.log("hou")
+    //console.log("inizio query")
+    conn.getConnection(function (err, connection) {
+    console.log("due");
+    if (err) throw err;
+    console.log("login..Connected!");
+      connection.query("select * from User where id = ?",
+      [
+          userId
+      ],
+      function(errr, result, fields) {
+        connection.release();
+        if (errr) throw errr;
+        console.log("nome user result " + result[0].nome)
+        res.locals.user= result[0];
+        console.log("locals name: " + res.locals.user.nome)
+
+        next();
+        //console.log("locals:  " + req.locals.user)
+      });
+    });
+  }
+  
+};
+
+// @route get
+// @desc homepage
+app.get('/', redirectLogin, check, function(req, res) {
+  const { user } = res.locals;
   //console.log("gfs == " + gfs)
   //console.log("userId == " + req.session.userId)
   //console.log("/preso")
   //const { user } = res.locals; 
   //console.log("session:  " + req.session)
   //console.log("local:  " + req.locals)
+  if(user){
     if(!gfs) {
     //console.log("some error occured, check connection to db");
     res.send("some error occured, check connection to db");
@@ -231,15 +258,17 @@ app.get('/', redirectLogin, function(req, res) {
             new Date(a["uploadDate"]).getTime()
           );
         });
-      console.log(f)
-      console.log("f  :"+f[0].filename)
-      return res.render("index", {
-        files: f, per: req.session.userPe, msg:"Ciao " + req.session.userNo
+        console.log(res.user)
+        return res.render("index", {
+        files: f, per: user.perm, msg:"Ciao " + user.nome
       });
     }
   });
+  }
 });
 
+// @route post
+// @desc funzione di login
 app.post('/login', redirectIndex, function(req, res) {
   console.log("uno");
   console.log(req.body);
@@ -262,11 +291,11 @@ app.post('/login', redirectIndex, function(req, res) {
         console.log(req.body);
         if (result.length != 0) {
           console.log("quattro");
-          console.log(result);
+          console.log(result[0]);
           console.log(result[0].id);
           req.session.userId = result[0].id;
-          req.session.userNo = result[0].nome;
-          req.session.userPe = result[0].perm;
+          /*req.session.userNo = result[0].nome;
+          req.session.userPe = result[0].perm;*/
           console.log(req.session.userId);
           return res.redirect('/');
         } else {
@@ -276,10 +305,19 @@ app.post('/login', redirectIndex, function(req, res) {
   });
 });
 
-app.get('/Rregister', redirectLogin, function(req,res){
+// @route get
+// @desc  reindirizzamento registrazione nuovi user
+app.get('/Rregister', redirectLogin, check, function(req,res){
+  const { user } = res.locals;
+  if(user.perm==1){
   res.render('register');
+  }else{
+    res.render('index',{err: "non hai i permessi necessari"})
+  }
 });
 
+// @route post
+// @desc registrazione user
 app.post('/register', redirectLogin, function(req, res) {
   //console.log("uno");
   //console.log(req.body);
@@ -313,9 +351,12 @@ app.post('/register', redirectLogin, function(req, res) {
   });
 });
 
+/*
+// @route get
+// @desc 
 app.get('/file/:filename', redirectLogin, function(req, res){
       //console.log(gfs);
-        /** First check if file exists */
+        /** First check if file exists 
         gfs.find({filename: req.params.filename}).toArray(function(err, files){
           if(!files || files.length === 0){
               return res.status(404).json({
@@ -330,21 +371,26 @@ app.get('/file/:filename', redirectLogin, function(req, res){
                 filename: files[0].filename,
                 root: "ctFiles"
             });
-            /** set the proper content type */
+            /** set the proper content type 
             res.set('Content-Type', files[0].contentType)
-            /** return response */
+            /** return response 
             return readstream.pipe(res);
           } else {
             res.json('File Not Found');
           }
     });
 });
+*/
 
+// @route post
+// @desc invio del file al db
 app.post('/send', redirectLogin, upload.single('file'), function(req, res){
   //console.log(req.file.filename);
   res.redirect('/');
 });
 
+// @route get
+// @desc visualizza il json dei file
 app.get("/files", redirectLogin, (req, res) => {
   gfs.find().toArray((err, files) => {
     // check if files
@@ -357,6 +403,8 @@ app.get("/files", redirectLogin, (req, res) => {
   });
 });
 
+// @route post
+// @desc (in uso) download file usando downloadStream
 app.post("/files/download/:name", redirectLogin, (req, res) => {
   var we = req.params.name;
   //console.log(we);
@@ -376,8 +424,11 @@ app.post("/files/download/:name", redirectLogin, (req, res) => {
     });
 });
 
-app.get("/cerca", redirectLogin, (req,res) => {
+// @route get
+// @desc query di ricerca file
+app.get("/cerca", redirectLogin, check, (req,res) => {
   const ricerca = req.query.ricerca;
+  const { user } = res.locals;
   //console.log(ricerca)
   const file = gfs
     .find()
@@ -417,13 +468,15 @@ app.get("/cerca", redirectLogin, (req,res) => {
           console.log("s:  "+s[i].metadata.original)
         }
       return res.render("index", {
-        searchR: s, per: req.session.userPe, msg:"Ciao " + req.session.userNo
+        searchR: s, per: user.perm, msg:"Ciao " + user.nome
       });
     }
     });
 
 });
 
+// @route get
+// @desc scarica file con readStream
 app.get("/files/:filename", redirectLogin,(req, res) => {
   //console.log("richiesta");
   const file = gfs
@@ -459,6 +512,8 @@ app.get("/files/:filename", redirectLogin,(req, res) => {
     });
 });
 
+// @route get
+// @desc visualizza i formati con delle immagini
 app.get('/fileType/:filename', redirectLogin, function(req,res){
     var type = req.params.filename;
     var ciao = type.substring(32);
@@ -510,6 +565,8 @@ app.get('/fileType/:filename', redirectLogin, function(req,res){
     }
 });
 
+// @route get
+// @desc visualizza un immagine
 app.get("/image/:filename", redirectLogin, (req, res) => {
   // console.log('id', req.params.id)
   const file = gfs
@@ -526,8 +583,8 @@ app.get("/image/:filename", redirectLogin, (req, res) => {
     });
 });
 
-// files/del/:id
-// Delete chunks from the db
+// @route post files/del/:id
+// @desc Delete chunks from the db
 app.post("/files/del/:id", redirectLogin,(req, res) => {
     gfs.delete(new mongoose.Types.ObjectId(req.params.id), (err, data) => {
       if (err) return res.status(404).json({ err: err.message });
@@ -535,10 +592,14 @@ app.post("/files/del/:id", redirectLogin,(req, res) => {
     });
 });
 
+// @route post 
+// @desc ricarica la pagina
 app.post('/reload', function(req,res){
   res.redirect('/');
 });
 
+// @route post
+// @desc funzione di logout
 app.post('/logout', redirectLogin, function(req, res){
   req.session.destroy(err => {
       if (err){
