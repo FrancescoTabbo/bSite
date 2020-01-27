@@ -88,12 +88,12 @@ const connM = mongoose.createConnection(uri, {
 let gfs;
 
 connM.once("open", () => {
-  console.log("inizializzazione gfs")
+  //console.log("inizializzazione gfs")
   // init stream
   gfs = new mongoose.mongo.GridFSBucket(connM.db, {
     bucketName: "uploads"
   });
-  console.log("gfs creato! "+ gfs)
+  //console.log("gfs creato! "+ gfs)
 });
 
 const storage = new GridFsStorage({
@@ -101,18 +101,18 @@ const storage = new GridFsStorage({
   
   file: (req, file) => {
     return new Promise((resolve, reject) => {
-      console.log("due");
+      //console.log("due");
       crypto.randomBytes(16, (err, buf) => {
-        console.log("tre");
+        //console.log("tre");
         if (err) {
           return reject(err);
-          console.log("errorrrerererere")
+          //console.log("errorrrerererere")
         }
         const filename = buf.toString("hex") + path.extname
         (file.originalname);
         const originalFilename = file.originalname;
-        console.log(file.originalname);
-        console.log("quattro");
+        //console.log(file.originalname);
+        //console.log("quattro");
         const fileInfo = {
           filename: filename,
           metadata: {original : originalFilename},
@@ -135,17 +135,17 @@ const params = {
 
 const check = (req,res,next) =>{
     const {userId} = req.session;
-    console.log("check userID:  " + userId)
-    console.log(/*"user id " + userId.id + */" session " + req.session.id + "userid session " + req.session.userId)
+    //console.log("check userID:  " + userId)
+    //console.log(/*"user id " + userId.id + */" session " + req.session.id + "userid session " + req.session.userId)
     if(userId){
-        console.log("controllo userId riuscito inizio contorllo db sql")
+        //console.log("controllo userId riuscito inizio contorllo db sql")
         const conn = mysql.createPool({
             host: "remotemysql.com",
             user: "W1Y2U1WmcR",
             password: "r9SaoTN3hk",
             database: "W1Y2U1WmcR"
         });
-        console.log("inizio query")
+        //console.log("inizio query")
         conn.ping(function (err) {
             if (err) throw err;
             console.log('Server responded to ping');
@@ -161,9 +161,9 @@ const check = (req,res,next) =>{
             function(errr, result, fields) {
               if (errr) throw errr;
               if (result.length != 0) {
-                console.log("id user result " + result[0].id)
+                //console.log("id user result " + result[0].id)
                 res.locals.user= result;
-                console.log("locals:  " + req.locals.user)
+                //console.log("locals:  " + req.locals.user)
               }
             });
         });
@@ -172,11 +172,11 @@ const check = (req,res,next) =>{
 };
 
 const redirectLogin = (req, res, next) => {
-  console.log(req.session)
-  console.log(req.session.userId)
-  console.log("redirect fa: " + req.session.userId)
+  //console.log(req.session)
+  //console.log(req.session.userId)
+  //console.log("redirect fa: " + req.session.userId)
     if(!req.session.userId){
-      console.log("redirect login")
+      //console.log("redirect login")
         res.render('login', {msg: "effettua il login!"});
     } else{
       
@@ -185,7 +185,7 @@ const redirectLogin = (req, res, next) => {
 }
 const redirectIndex = (req, res, next) => {
     if(req.session.userId){
-      console.log("redirect index")
+      //console.log("redirect index")
         res.render('index', {err: "esegui il logout!"});
     } else{
       
@@ -194,14 +194,14 @@ const redirectIndex = (req, res, next) => {
 }
 
 app.get('/', redirectLogin, function(req, res) {
-  console.log("gfs == " + gfs)
-  console.log("userId == " + req.session.userId)
-    console.log("/preso")
+  //console.log("gfs == " + gfs)
+  //console.log("userId == " + req.session.userId)
+  //console.log("/preso")
   //const { user } = res.locals; 
-  console.log("session:  " + req.session)
-  console.log("local:  " + req.locals)
+  //console.log("session:  " + req.session)
+  //console.log("local:  " + req.locals)
     if(!gfs) {
-    console.log("some error occured, check connection to db");
+    //console.log("some error occured, check connection to db");
     res.send("some error occured, check connection to db");
     process.exit(0);
   }
@@ -276,46 +276,45 @@ app.post('/login', redirectIndex, function(req, res) {
   });
 });
 
-/*app.post('/register', redirectIndex, function(req, res) {
-  console.log("uno");
-  console.log(req.body);
-  const conn = mysql.createConnection({
-    host: "remotemysql.com",
-    user: "W1Y2U1WmcR",
-    password: "r9SaoTN3hk",
-    database: "W1Y2U1WmcR"
-  });
+app.get('/Rregister', redirectLogin, function(req,res){
+  res.render('register');
+});
+
+app.post('/register', redirectLogin, function(req, res) {
+  //console.log("uno");
+  //console.log(req.body);
   const nickname = req.body.nickname;
   const password = req.body.password;
   const newpassword = md5(password +
   ")@Mpk=2!?b>!DRXf\g>{,YI/t.h]@-||%°<#Bri']^o_€+L}9;3GWx?/7&Vh.T5qx£#:(*");
 
-  conn.connect(function(err) {
-    console.log("due");
+  conn.getConnection(function(err, connection) {
+    //console.log("due");
     if (err) throw err;
-    console.log("register..Connected!");
-    conn.query("INSERT INTO User(nome,password) VALUES(? ,?)",
+    //console.log("register..Connected!");
+    connection.query("INSERT INTO User(nome,password) VALUES(? ,?)",
     [
       nickname,
       newpassword
     ],
      function(errr, result, fields) {
+      connection.release();
       if (errr) throw errr;
-      console.log("tre");
-      console.log(req.body);
-      console.log(req.query);
+      //console.log("tre");
+      //console.log(req.body);
+      //console.log(req.query);
       if (result.length != 0) {
         //res.send({ message: "OK", ID: result });
-        res.render('login',{msg:"Effettua il login!"});
+        res.render('register', {err:"Account creato!"});
       } else {
-        res.send({ message: "errore!" });
+        res.render('register', { err: "riprova!" });
       }
     });
   });
-});*/
+});
 
 app.get('/file/:filename', redirectLogin, function(req, res){
-      console.log(gfs);
+      //console.log(gfs);
         /** First check if file exists */
         gfs.find({filename: req.params.filename}).toArray(function(err, files){
           if(!files || files.length === 0){
@@ -326,7 +325,7 @@ app.get('/file/:filename', redirectLogin, function(req, res){
           }
           if (files.length > 0) {
             
-            console.log(gfs);
+            //console.log(gfs);
             var readstream = gfs.createReadStream({
                 filename: files[0].filename,
                 root: "ctFiles"
@@ -342,7 +341,7 @@ app.get('/file/:filename', redirectLogin, function(req, res){
 });
 
 app.post('/send', redirectLogin, upload.single('file'), function(req, res){
-  console.log(req.file.filename);
+  //console.log(req.file.filename);
   res.redirect('/');
 });
 
@@ -360,7 +359,7 @@ app.get("/files", redirectLogin, (req, res) => {
 
 app.post("/files/download/:name", redirectLogin, (req, res) => {
   var we = req.params.name;
-  console.log(we);
+  //console.log(we);
   const file = gfs
     .find({
       filename: we
@@ -379,12 +378,12 @@ app.post("/files/download/:name", redirectLogin, (req, res) => {
 
 app.get("/cerca", redirectLogin, (req,res) => {
   const ricerca = req.query.ricerca;
-  console.log(ricerca)
+  //console.log(ricerca)
   const file = gfs
     .find()
     .toArray((err, files) => {
       // check if files
-      console.log("ricerca files")
+      //console.log("ricerca files")
     if (!files || files.length === 0) {
       return res.render("index", {
         search: false , err: "nessun file trovato"
@@ -412,8 +411,8 @@ app.get("/cerca", redirectLogin, (req,res) => {
             new Date(a["uploadDate"]).getTime()
           );
         });
-        console.log(s)
-        console.log("inzio loop")
+        //console.log(s)
+        //console.log("inzio loop")
         for(i=0;i>=s.length;i++){
           console.log("s:  "+s[i].metadata.original)
         }
@@ -426,13 +425,13 @@ app.get("/cerca", redirectLogin, (req,res) => {
 });
 
 app.get("/files/:filename", redirectLogin,(req, res) => {
-  console.log("richiesta");
+  //console.log("richiesta");
   const file = gfs
   .find(
     {
       filename: req.params.filename
     }).toArray((err, files) => {
-      console.log(" file trovato");
+      //console.log(" file trovato");
       if (!files || files.length === 0) {
         return res.status(404).json({
           err: "no files exist"
@@ -463,50 +462,50 @@ app.get("/files/:filename", redirectLogin,(req, res) => {
 app.get('/fileType/:filename', redirectLogin, function(req,res){
     var type = req.params.filename;
     var ciao = type.substring(32);
-    console.log(type + " ciao: " + ciao);
+    //console.log(type + " ciao: " + ciao);
     if(ciao == ".xml" || ciao == ".XML" )
     {
-        console.log("1 xml");
+        //console.log("1 xml");
         res.download("images/Xml.png");
     }
     if(ciao == ".bat" || ciao == ".BAT"){
-        console.log("1 bat");
+        //console.log("1 bat");
         res.download("images/bat.ico");
     }
     if(ciao == ".csv" || ciao == ".CSV"){
-        console.log("1 csv");
+        //console.log("1 csv");
         res.download("images/Csv.png");
     }
     if(ciao == ".docx" || ciao == ".DOCX"){
-        console.log("1 doc");
+        //console.log("1 doc");
         res.download("images/Doc.png");
     }
     if(ciao == ".xlsx" || ciao == ".XLSX"){
-        console.log("1 Excel");
+        //console.log("1 Excel");
         res.download("images/Excel.png");
     }
     if(ciao == ".exe" || ciao == ".EXE" || ciao == ".jar" || ciao == ".JAR"){
-        console.log("1 exe o jar");
+        //console.log("1 exe o jar");
         res.download("images/Exe.png");
     }
     if(ciao == ".pdf" || ciao == ".PDF"){
-        console.log("1 pdf");
+        //console.log("1 pdf");
         res.download("images/Pdf.png");
     }
     if(ciao == ".rar" || ciao == ".RAR"){
-        console.log("1 rar");
+        //console.log("1 rar");
         res.download("images/rar.png");
     }
     if(ciao == ".txt" || ciao == ".TXT"){
-        console.log("1 txt");
+        //console.log("1 txt");
         res.download("images/Txt.png");
     }
     if(ciao == ".mp4" || ciao == ".MP4" || ciao == ".avi" || ciao == ".AVI" || ciao == ".ogg" || ciao == ".OGG"){
-        console.log("1 video");
+        //console.log("1 video");
         res.download("images/Video.png");
     }
     if(ciao == ".zip" || ciao == ".ZIP"){
-        console.log("1 zip");
+        //console.log("1 zip");
         res.download("images/Zip.png");
     }
 });

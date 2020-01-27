@@ -45,28 +45,30 @@ html
       a.active(href='/') Home
       |   
       a(href='#') Guide
-      |   
-      a(href='#') Contact
+      |
+      if per == 1   
+        a(href='/Rregister') Register
       |
       form(action='/cerca', method='GET')   
         input(type='text', placeholder='Search..', name='ricerca')
     .container
       .row
         .col-md-6.m-auto
-          form(action='/send', method='POST', enctype='multipart/form-data')
-            h3(class='text-center display-4 my-4') #{msg}
-            .custom-file.mb-3
-              |
-              label(for='file', class='custom-file-label') Scegli il File
-              br
-              input(type='file', ngf-select='', ng-model='exFile', name='file', id = 'file', class='custom-file-input', required=' ')
-              script
-                include ../js/scri.js
-              |       
-              | #{ok}
-              br
-              |       
-              input(type='submit', value='Carica', class='btn btn-primary btn-block')
+          if !searchR
+            form(action='/send', method='POST', enctype='multipart/form-data')
+              h3(class='text-center display-4 my-4') #{msg}
+              .custom-file.mb-3
+                |
+                label(for='file', class='custom-file-label') Scegli il File
+                br
+                input(type='file', ngf-select='', ng-model='exFile', name='file', id = 'file', class='custom-file-input', required=' ')
+                script
+                  include ../js/scri.js
+                |       
+                | #{ok}
+                br
+                |       
+                input(type='submit', value='Carica', class='btn btn-primary btn-block')
           br
           hr
           br
