@@ -43,10 +43,6 @@ img{
 .dropdown-menu li a:hover {
   background-color: red !important;
 }
-body {
-  font: 400 18px/1.8 Lato, sans-serif;
-  color: #777;
-}
 footer {
   background-color: #2d2d30;
   color: #f5f5f5;
