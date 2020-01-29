@@ -152,13 +152,13 @@ html
             .col-sm-4
               form(action='/logout', method='POST')
                 br
-                input(type='submit', value='LogOut', class='btn btn-primary')
+                input(type='submit', value='LogOut', class='btn btn-primary')            
+            .col-sm-4
+            .col-sm-4
             if searchR
-              .col-sm-4
-              .col-sm-4
-                form(action='/')
-                  br
-                  input(type='submit', value='Annulla', class='btn btn-primary')
+              form(action='/')
+                br
+                input(type='submit', value='Annulla', class='btn btn-primary')
     .footer.text-center
       if !err
         if !searchR
