@@ -436,8 +436,9 @@ app.get("/cerca", redirectLogin, check, (req,res) => {
       // check if files
       //console.log("ricerca files")
     if (!files || files.length === 0) {
+      console.log("nessun file trovato")
       return res.render("index", {
-        search: false , err: "nessun file trovato"
+        searchR: false , err: "nessun file trovato"
       });
     } else {
       const s = files
@@ -454,7 +455,7 @@ app.get("/cerca", redirectLogin, check, (req,res) => {
           if (
             file.metadata.original.match(new RegExp(ricerca,"i")) 
           )
-          return file;
+            return file;
         })
         .sort((a, b) => {
           return (
@@ -466,6 +467,12 @@ app.get("/cerca", redirectLogin, check, (req,res) => {
         //console.log("inzio loop")
         for(i=0;i>=s.length;i++){
           console.log("s:  "+s[i].metadata.original)
+        }
+        console.log("lunghezza" + s.length)
+        if (s.length === 0){
+          console.log("no")
+        }else{
+          console.log("si")
         }
       return res.render("index", {
         searchR: s, per: user.perm, msg:"Ciao " + user.nome

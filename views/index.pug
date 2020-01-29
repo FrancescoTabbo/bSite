@@ -78,6 +78,12 @@ html
           if err
             hr
           if searchR
+            - var verifica = 0
+            if searchR[0] == undefined
+              - verifica = 1
+              h4 nessun file trovato
+              br
+              hr
             each file in searchR
               if file !== undefined
                 .card.card-bosy.mb3
@@ -140,16 +146,19 @@ html
             else
               if !err
                 p.description Nessuna Foto Caricata
-          .col-sm-2
-            form(action='/logout', method='POST')
-              br
-              input(type='submit', value='LogOut', class='btn btn-primary')
-          if searchR
-            .col-sm-8
-            .col-sm-2
-              form(action='/')
+          .row
+            br
+            hr
+            .col-sm-4
+              form(action='/logout', method='POST')
                 br
-                input(type='submit', value='Annulla', class='btn btn-primary')
+                input(type='submit', value='LogOut', class='btn btn-primary')
+            if searchR
+              .col-sm-4
+              .col-sm-4
+                form(action='/')
+                  br
+                  input(type='submit', value='Annulla', class='btn btn-primary')
     .footer.text-center
       if !err
         if !searchR
