@@ -41,9 +41,13 @@ html
             br
             .form    
               form(action='/register', method='POST')
-                input(type='text', placeholder='username', name ='nickname', id='nickname')
+                input(type='text', class='form-control', placeholder='username', name ='nickname', id='nickname')
                 |       
-                input(type='password', placeholder='password', name='password', id='password')
+                br
+                |
+                input(type='password', class='form-control', placeholder='password', name='password', id='password')
+                |
+                br
                 |       
                 input(type='submit', value='Registra', class='btn btn-danger')
                 |      
