@@ -136,12 +136,26 @@ const storage = new GridFsStorage({
         const originalFilename = file.originalname;
         //console.log(file.originalname);
         //console.log("quattro");
-        const fileInfo = {
-          filename: filename,
-          metadata: {original : originalFilename},
-          bucketName: "uploads"
-        };
-        resolve(fileInfo);
+        console.log("sList:  "+ req.body.sList)
+        if(req.body.sList){
+          const fileType = req.body.sList;
+          const fileInfo = {
+            filename: filename,
+            metadata: {
+              original : originalFilename,
+              fileType: fileType
+            },
+            bucketName: "uploads"
+          };
+          resolve(fileInfo);
+        }else{
+          const fileInfo = {
+            filename: filename,
+            metadata: {original : originalFilename},
+            bucketName: "uploads"
+          };
+          resolve(fileInfo);
+        }      
       });
     });
   }
@@ -385,6 +399,8 @@ app.get('/file/:filename', redirectLogin, function(req, res){
 // @route post
 // @desc invio del file al db
 app.post('/send', redirectLogin, upload.single('file'), function(req, res){
+  console.log("BBBBODY")
+  console.log("name: "+req.body.sList)
   //console.log(req.file.filename);
   res.redirect('/');
 });
@@ -482,6 +498,46 @@ app.get("/cerca", redirectLogin, check, (req,res) => {
 
 });
 
+app.get('/guide',redirectLogin, check, (req,res) =>{
+  const { user } = res.locals;
+  //console.log(ricerca)
+  const file = gfs
+    .find()
+    .toArray((err, files) => {
+      // check if files
+      //console.log("ricerca files")
+    if (!files || files.length === 0) {
+      console.log("nessun file trovato")
+      return res.render("index", {
+        searchR: false , err: "nessun file trovato"
+      });
+    } else {
+      const s = files
+        .map(file => {
+          if (
+            file.contentType === "image/png" ||
+            file.contentType === "image/jpeg" ||
+            file.contentType === "image/gif"
+          ) {
+            file.isImage = true;
+          } else {
+            file.isImage = false;
+          }
+            return file;
+        })
+        .sort((a, b) => {
+          return (
+            new Date(b["uploadDate"]).getTime() -
+            new Date(a["uploadDate"]).getTime()
+          );
+        });
+      return res.render("guides", {
+        filtro: s, per: user.perm
+      });
+    }
+    });
+});
+
 // @route get
 // @desc scarica file con readStream
 app.get("/files/:filename", redirectLogin,(req, res) => {
@@ -546,7 +602,7 @@ app.get('/fileType/:filename', redirectLogin, function(req,res){
         //console.log("1 Excel");
         res.download("images/Excel.png");
     }
-    if(ciao == ".exe" || ciao == ".EXE" || ciao == ".jar" || ciao == ".JAR"){
+    if(ciao == ".exe" || ciao == ".EXE" || ciao == ".jar" || ciao == ".JAR" || ciao == ".Java" || ciao == ".JAVA" || ciao == ".java"){
         //console.log("1 exe o jar");
         res.download("images/Exe.png");
     }

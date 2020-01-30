@@ -107,3 +107,6 @@ btn btn-primary{
     border: 1px solid #ccc;  
   }
 }
+option[value=""][disabled] {
+  display: none;
+}

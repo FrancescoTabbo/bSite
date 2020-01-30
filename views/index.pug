@@ -17,7 +17,7 @@ html
     |   
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js')
     |
-    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")
+    //script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")
     style
       include ../css/sty.css
   |   
@@ -44,7 +44,7 @@ html
     .topnav
       a.active(href='/') Home
       |   
-      a(href='#') Guide
+      a(href='/guide') Guide
       |
       if per == 1   
         a(href='/Rregister') Register
@@ -58,11 +58,25 @@ html
             if !searchR
               form(action='/send', method='POST', enctype='multipart/form-data')
                 h3(class='text-center display-4 my-4') #{msg}
-                .custom-file.mb-3
-                  |
-                  label(for='file', class='custom-file-label') Scegli il File
-                  br
-                  input(type='file', ngf-select='', ng-model='exFile', name='file', id = 'file', class='custom-file-input', required=' ')
+                .row
+                  .col-md-9.m-auto
+                    |                 
+                    label(for='file', class='custom-file-label') Scegli il File
+                    br
+                    input(type='file', ngf-select='', ng-model='exFile', name='file', id = 'file', class='custom-file-input', required=' ')
+                  .col-md-3.m-auto
+                    select.browser-default.custom-select(name ='sList',id='sList')
+                      option(value = '',disabled selected hidden) Tipo
+                      |   
+                      option(value='armaniCassa') Guide Armani cassa
+                      |   
+                      option(value='armaniPos') Guide Armani Pos
+                      |   
+                      option(value='versaceCassa') Guide Versace Cassa
+                      |   
+                      option(value='versacePos') Guide Versace Pos
+                    br
+                    br
                   script
                     include ../js/scri.js
                   |       
@@ -86,6 +100,7 @@ html
               hr
             each file in searchR
               if file !== undefined
+                - var name = file.filename
                 .card.card-bosy.mb3
                   if file.isImage
                     - var url = file.filename
@@ -102,7 +117,6 @@ html
                         .card-footer
                           - var id = file._id
                           - var nome = file.metadata.original
-                          - var name = file.filename
                           form(action='/files/del/' + id + '', method='post')
                             button.btn.btn-danger
                               i.glyphicon.glyphicon-ban-circle
