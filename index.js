@@ -18,7 +18,8 @@ const Grids = require('gridfs-stream');
 const app = express();
 const session = require("express-session");
 const ONE_HOUR = 60 *60 * 1000;
-
+var server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 /* Configurazione HTTPS:
 const fs = require('fs');
@@ -55,6 +56,7 @@ const IN_PROD = NODE_ENV === "production";
 
 //middleware
 //app.set('trust proxy', 1);
+
 app.set('views', './views');
 app.set('view engine', 'pug');
 app.use(express.json());
@@ -78,7 +80,7 @@ app.use(session({
 
 //app.enable('trust proxy');
 
-/* CONFIGUARZIONE HTTPS PER RE-INDIRIZZARE SU HTTPS DA HTTP
+/* CONFIGUARZIONE HTTPS PER RE-INDIRIZZARE DA HTTP A HTTPS
 app.use (function (req, res, next) {
   console.log("protocol " + req.protocol)
   console.log("secure " + req.secure)
@@ -104,8 +106,8 @@ const dbName = 'test';
 const uri = "mongodb+srv://admin:Admin1234@francesco-i5qce.mongodb.net/test?retryWrites=true&w=majority";
 //{useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
 const connM = mongoose.createConnection(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useNewUrlParser: true
 });
 
 let gfs;
@@ -170,7 +172,7 @@ const params = {
   '/multiple': 'files'
 };
 
-// @desc "middleware" di reindirizzamento al login
+// @desc "middleware" di reindirizzamento al login in caso di mancanza di sessionId
 const redirectLogin = (req, res, next) => {
   //console.log(req.session)
   //console.log(req.session.userId)
@@ -184,7 +186,7 @@ const redirectLogin = (req, res, next) => {
     }
 }
 
-// @desc "middleware" di reindirizzamento alla homepage
+// @desc "middleware" di reindirizzamento alla homepage in caso di presenza del sessionId
 const redirectIndex = (req, res, next) => {
     if(req.session.userId){
       //console.log("redirect index")
@@ -540,7 +542,7 @@ app.get('/guide',redirectLogin, check, (req,res) =>{
 
 // @route get
 // @desc scarica file con readStream
-app.get("/files/:filename", redirectLogin,(req, res) => {
+/*app.get("/files/:filename", redirectLogin,(req, res) => {
   //console.log("richiesta");
   const file = gfs
   .find(
@@ -573,7 +575,7 @@ app.get("/files/:filename", redirectLogin,(req, res) => {
         });
     });
     });
-});
+});*/
 
 // @route get
 // @desc visualizza i formati con delle immagini
@@ -672,8 +674,74 @@ app.post('/logout', redirectLogin, function(req, res){
   });
 });
 
+// @route get
+// @desc chat di gruppo
+
+app.get('/chat', redirectLogin, check, function(req,res){
+  const { user } = res.locals;
+  var numUsers = 0;
+  io.on('connection', (socket) => {
+  var addedUser = false;
+
+  // when the client emits 'new message', this listens and executes
+  socket.on('new message', (data) => {
+    // we tell the client to execute 'new message'
+    socket.broadcast.emit('new message', {
+      username: socket.username,
+      message: data
+    });
+  });
+
+  // when the client emits 'add user', this listens and executes
+  socket.on('add user', (username) => {
+    if (addedUser) return;
+
+    // we store the username in the socket session for this client
+    socket.username = username;
+    ++numUsers;
+    addedUser = true;
+    socket.emit('login', {
+      numUsers: numUsers
+    });
+    // echo globally (all clients) that a person has connected
+    socket.broadcast.emit('user joined', {
+      username: socket.username,
+      numUsers: numUsers
+    });
+  });
+
+  // when the client emits 'typing', we broadcast it to others
+  socket.on('typing', () => {
+    socket.broadcast.emit('typing', {
+      username: socket.username
+    });
+  });
+
+  // when the client emits 'stop typing', we broadcast it to others
+  socket.on('stop typing', () => {
+    socket.broadcast.emit('stop typing', {
+      username: socket.username
+    });
+  });
+
+  // when the user disconnects.. perform this
+  socket.on('disconnect', () => {
+    if (addedUser) {
+      --numUsers;
+
+      // echo globally that this client has left
+      socket.broadcast.emit('user left', {
+        username: socket.username,
+        numUsers: numUsers
+      });
+    }
+  });
+  });
+  res.render('chat',{nome:user.nome,per: user.perm})
+});
+
 app.set('port', process.env.PORT || 3000);
 
-const server = app.listen(app.get('port'), function() {
-    debug('Express server listening on port ' + server.address().port);
+server.listen(app.get('port'), () => {
+  console.log('Server listening at port %d', app.get('port'));
 });
