@@ -21,10 +21,6 @@ html(lang='en')
       if per == 1   
         a(href='/Rregister') Register
       |
-      if !searchR
-        a.down-arrow(href='#bottom', data-toggle='tooltip', title='TO BOT')
-          span.fa.fa-chevron-down
-      |
       form(action='/cerca', method='GET')   
         input(type='text', placeholder='Search..', name='ricerca')
     ul.pages
