@@ -15,6 +15,7 @@ const crypto = require('crypto');
 const methodOverride = require('method-override');
 const MongoClient = require('mongodb').MongoClient;
 const Grids = require('gridfs-stream');
+const mobile = require('is-mobile');
 const app = express();
 const session = require("express-session");
 const ONE_HOUR = 60 *60 * 1000;
@@ -233,9 +234,11 @@ const check = (req,res,next) =>{
 
 
 app.get('/', redirectLogin, check, function(req, res){
+  
+  console.log(mobile(req));
   console.log('helo')
   const { user } = res.locals;
-  res.render('index', {msg = "Ciao "+ user.nome, per:user.perm})
+  res.render('index', {per: user.perm, msg:"Ciao " + user.nome})
 })
 
 // @route get

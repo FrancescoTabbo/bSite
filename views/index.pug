@@ -43,13 +43,43 @@ html
     .container
       .row
         .col-md-6.m-auto
-          if !err
-            h1 #{msg}
-            .col-sm-4
-              form(action='/logout', method='POST')
-                br
-                input(type='submit', value='LogOut', class='btn btn-primary')            
-            .col-sm-4
+          br
+      .row
+        #v-pills-tab.nav.flex-column.nav-pills(role='tablist', aria-orientation='vertical')
+          h1 #{msg}
+          a#v-pills-news-tab.nav-link.active(data-toggle='pill', href='#v-pills-news', role='tab', aria-controls='v-pills-news', aria-selected='true') News
+          |   
+          a#v-pills-tesis-tab.nav-link(data-toggle='pill', href='#v-pills-armaniP', role='tab', aria-controls='v-pills-tesis', aria-selected='false') Tesis
+          |   
+          a#v-pills-versaceC-tab.nav-link(data-toggle='pill', href='#v-pills-versaceC', role='tab', aria-controls='v-pills-versaceC', aria-selected='false') Versace Cassa
+          |   
+          a#v-pills-versaceP-tab.nav-link(data-toggle='pill', href='#v-pills-versaceP', role='tab', aria-controls='v-pills-versaceP', aria-selected='false') Versace Pos
+          |
+          a#v-pills-altro-tab.nav-link(data-toggle='pill', href='#v-pills-altro', role='tab', aria-controls='v-pills-altro', aria-selected='false') Altro
+          br
+          form(action='/logout', method='POST')
+              br
+              input(type='submit', value='LogOut', class='btn btn-primary')  
+        .col-md-6.m-auto  
+          #v-pills-tabContent.tab-content
+            #v-pills-news.tab-pane.fade.show.active(role='tabpanel', aria-labelledby='v-pills-news-tab')
+              
+            |   
+            #v-pills-tesis.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-tesis-tab')
+              //iframe(src='www.tesis.binhexs.it', height='200', width='300')
+              //script
+                include ../js/frame.js
+              a(href='https://tesis.binhexs.it/Tesis/UIClassicASP/default.htm') Tesis
+            |   
+            #v-pills-versaceC.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-versaceC-tab')
+                        
+            |   
+            #v-pills-versaceP.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-versaceP-tab')
+                       
+            |
+            #v-pills-altro.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-altro-tab')
+            |
+                 
     .footer.text-center
       if !err
         if !searchR
