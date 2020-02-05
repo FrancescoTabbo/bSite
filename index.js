@@ -37,7 +37,6 @@ const httpsServer = https.createServer(httpsOptions, app);
 httpsServer.listen(httpsPort, hostname);
 */
 
-
 const {
     NODE_ENV = 'development',
     SESS_NAME = 'sid',
@@ -232,9 +231,16 @@ const check = (req,res,next) =>{
   
 };
 
+
+app.get('/', redirectLogin, check, function(req, res){
+  console.log('helo')
+  const { user } = res.locals;
+  res.render('index', {msg = "Ciao "+ user.nome, per:user.perm})
+})
+
 // @route get
-// @desc homepage
-app.get('/', redirectLogin, check, function(req, res) {
+// @desc upload page
+app.get('/upload', redirectLogin, check, function(req, res) {
   const { user } = res.locals;
   //console.log("gfs == " + gfs)
   //console.log("userId == " + req.session.userId)
@@ -275,7 +281,7 @@ app.get('/', redirectLogin, check, function(req, res) {
           );
         });
         console.log(res.user)
-        return res.render("index", {
+        return res.render("upload", {
         files: f, per: user.perm, msg:"Ciao " + user.nome
       });
     }
