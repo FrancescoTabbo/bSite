@@ -86,7 +86,11 @@ ul {
 
 /* Chat page */
 
-.chat.page {
+/*.chat.page {
+  display: none;
+}*/
+
+.nome {
   display: none;
 }
 

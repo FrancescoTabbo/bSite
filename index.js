@@ -19,7 +19,7 @@ const mobile = require('is-mobile');
 const app = express();
 const session = require("express-session");
 const ONE_HOUR = 60 *60 * 1000;
-var server = require('http').createServer(app);
+const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 /* Configurazione HTTPS:
@@ -687,9 +687,12 @@ app.post('/logout', redirectLogin, function(req, res){
 // @desc chat di gruppo
 
 app.get('/chat', redirectLogin, check, function(req,res){
-  const { user } = res.locals;
-  var numUsers = 0;
-  io.on('connection', (socket) => {
+  const { user } = res.locals; 
+  res.render('chat',{nome:user.nome,per: user.perm})
+});
+
+var numUsers = 0;
+io.on('connection', (socket) => {
   var addedUser = false;
 
   // when the client emits 'new message', this listens and executes
@@ -746,8 +749,6 @@ app.get('/chat', redirectLogin, check, function(req,res){
     }
   });
   });
-  res.render('chat',{nome:user.nome,per: user.perm})
-});
 
 app.set('port', process.env.PORT || 3000);
 

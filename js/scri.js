@@ -35,3 +35,12 @@ $(document).ready(function(){
         document.getElementById("maan").submit();
     }); 
 });
+
+function openForm() {
+  console.log('hey');
+  document.getElementById("myForm").style.display = "block";
+}
+
+function closeForm() {
+  document.getElementById("myForm").style.display = "none";
+}

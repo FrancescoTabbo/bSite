@@ -1,4 +1,6 @@
 $(function() {
+  console.log('uno');
+  console.log(username);
   var FADE_TIME = 150; // ms
   var TYPING_TIMER_LENGTH = 400; // ms
   var COLORS = [
@@ -37,24 +39,26 @@ $(function() {
 
   // Sets the client's username
   const setUsername = () => {
-    console.log( document.getElementById("nome").value);
     username = document.getElementById("nome").innerHTML;
     console.log(username)
 
     // If the username is valid
     if (username) {
-      $loginPage.fadeOut();
-      $chatPage.show();
-      $loginPage.off('click');
-      $currentInput = $inputMessage.focus();
+      //$loginPage.fadeOut();
+      //$chatPage.show();
+      //$loginPage.off('click');
+      //$currentInput = $inputMessage.focus();
 
       // Tell the server your username
       socket.emit('add user', username);
     }
   }
-
+  if(!username){
+    setUsername();
+  }
   // Sends a chat message
   const sendMessage = () => {
+    console.log('send1');
     var message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
@@ -67,6 +71,7 @@ $(function() {
       });
       // tell server to execute 'new message' and send along one parameter
       socket.emit('new message', message);
+      console.log('send2');
     }
   }
 
@@ -231,7 +236,7 @@ $(function() {
   socket.on('login', (data) => {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to Socket.IO Chat – ";
+    var message = "Joined successfully!";
     log(message, {
       prepend: true
     });

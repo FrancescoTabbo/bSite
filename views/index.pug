@@ -31,6 +31,8 @@ html
       |
       a(href='/chat') Chat
       |
+      a(onclick='openForm()') PopUp
+      |
       if per == 1   
         a(href='/Rregister') Register
       |
@@ -79,7 +81,17 @@ html
             |
             #v-pills-altro.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-altro-tab')
             |
-                 
+    #myForm.chat-popup
+      h1 Chat
+        |     
+        label(for='msg')
+          b Message
+        |     
+        textarea(placeholder='Type message..', name='msg', required='')
+        |     
+        button.btn(type='submit') Send
+        |     
+        button.btn.cancel(type='button', onclick='closeForm()') Close
     .footer.text-center
       if !err
         if !searchR
