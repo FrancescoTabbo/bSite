@@ -152,3 +152,6 @@ option[value=""][disabled] {
   resize: none;
   min-height: 200px;
 }
+.nome {
+  display: none;
+}

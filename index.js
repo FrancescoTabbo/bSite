@@ -232,13 +232,17 @@ const check = (req,res,next) =>{
   
 };
 
+app.get('/pop', function(req,res){
+  res.render('popup');
+})
+
 
 app.get('/', redirectLogin, check, function(req, res){
   
   console.log(mobile(req));
   console.log('helo')
   const { user } = res.locals;
-  res.render('index', {per: user.perm, msg:"Ciao " + user.nome})
+  res.render('index', {per: user.perm, msg:"Ciao " + user.nome, nome:user.nome})
 })
 
 // @route get
