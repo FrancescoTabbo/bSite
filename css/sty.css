@@ -134,6 +134,22 @@ option[value=""][disabled] {
   right: 15px;
   border: 3px solid #f1f1f1;
   z-index: 9;
+  height: 400px;
+}
+.myFrame {
+  height: 95%;
+}
+.myFa {
+  position: absolute;
+  right: 0px;
+  border: 1px solid cadetblue;
+}
+.myA {
+  border: 1px solid cadetblue;
+}
+.log1
+span[ class="username"][ style="color: rgb(247, 139, 0);"]{
+  text-align:right;
 }
 /* Add styles to the form container */
 .form-container {

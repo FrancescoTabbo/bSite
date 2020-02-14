@@ -15,19 +15,15 @@ html(lang='en')
     |
     style
       include ../css/sty.css
+    style.
+      body
+      {
+      font-size: 3.7vw;
+      }
+      span[ class="username"][ style="color: rgb(247, 139, 0);"]{
+      align:right;
+      }
   body
-    .topnav
-      a.active(href='/') Home
-      |   
-      a(href='/guide') Guide
-      |
-      a(href='/chat') Chat
-      |
-      if per == 1   
-        a(href='/Rregister') Register
-      |
-      form(action='/cerca', method='GET')   
-        input(type='text', placeholder='Search..', name='ricerca')
     ul.pages
       li.chat.page
         h3.title(id='nome', class = 'nome') #{nome}
