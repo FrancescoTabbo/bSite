@@ -1,3 +1,4 @@
+doctype html
 html
   head
     link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', crossorigin='anonymous')
@@ -18,7 +19,7 @@ html
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js')
     |
     script(src='https://code.jquery.com/jquery-3.2.1.min.js')
-    |     
+    |
     //script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js', integrity='sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4', crossorigin='anonymous')
     |
     //script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")
@@ -26,95 +27,117 @@ html
       include ../css/sty.css
   |   
   body
-    .topnav
-      a.active(href='/') Home
-      |   
-      a(href='/guide') Guide
-      |   
-      a(href='/upload') Upload
-      |
-      a(href='/chat') Chat
-      |
-      a(onclick='openForm()') PopUp
-      |
-      if per == 1   
-        a(href='/Rregister') Register
-      |
-      if !searchR
-        a.down-arrow(href='#bottom', data-toggle='tooltip', title='TO BOT')
-          span.fa.fa-chevron-down
-      |
-      form(action='/cerca', method='GET')   
-        input(type='text', placeholder='Search..', name='ricerca')
-    .container
-      .row
-        .col-md-6.m-auto
-          br
-      .row
-        #v-pills-tab.nav.flex-column.nav-pills(role='tablist', aria-orientation='vertical')
-          h1 #{msg}
-          a#v-pills-news-tab.nav-link.active(data-toggle='pill', href='#v-pills-news', role='tab', aria-controls='v-pills-news', aria-selected='true') News
-          |   
-          a#v-pills-tesis-tab.nav-link(data-toggle='pill', href='#v-pills-armaniP', role='tab', aria-controls='v-pills-tesis', aria-selected='false') Tesis
-          |   
-          a#v-pills-versaceC-tab.nav-link(data-toggle='pill', href='#v-pills-versaceC', role='tab', aria-controls='v-pills-versaceC', aria-selected='false') Versace Cassa
-          |   
-          a#v-pills-versaceP-tab.nav-link(data-toggle='pill', href='#v-pills-versaceP', role='tab', aria-controls='v-pills-versaceP', aria-selected='false') Versace Pos
-          |
-          a#v-pills-altro-tab.nav-link(data-toggle='pill', href='#v-pills-altro', role='tab', aria-controls='v-pills-altro', aria-selected='false') Altro
-          br
-          form(action='/logout', method='POST')
-              br
-              input(type='submit', value='LogOut', class='btn btn-primary')  
-        .col-md-6.m-auto  
-          #v-pills-tabContent.tab-content
-            #v-pills-news.tab-pane.fade.show.active(role='tabpanel', aria-labelledby='v-pills-news-tab')
-              
-            |   
-            #v-pills-tesis.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-tesis-tab')
-              //iframe(src='www.tesis.binhexs.it', height='200', width='300')
-              //script
-                include ../js/frame.js
-              a(href='https://tesis.binhexs.it/Tesis/UIClassicASP/default.htm') Tesis
-            |   
-            #v-pills-versaceC.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-versaceC-tab')
-                        
-            |   
-            #v-pills-versaceP.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-versaceP-tab')
-                       
-            |
-            #v-pills-altro.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-altro-tab')
-            |
-    #myForm.chat-popup
-      div
-        a.myA(href='/chat') Fullscreen
-        i.fa.fa-times.myFa(onclick='closeForm()' aria-hidden='true')
-      iFrame.myFrame(src='/chat')
-    //#myForm.chat-popup
-      li.chat.page
-        p.title(id='nome', class = 'nome') #{nome}
-        h2 Chat
+    .main-container
+      .topnav
+        a.active(href='/') Home
+        |   
+        a(href='/guide') Guide
+        |   
+        a(href='/upload') Upload
         |
-        .chatArea
-          ul.messages
+        a(href='/chat') Chat
+        //jxDPjG2cjBVzSN/hqi3mvmNq/G9admD3nivM1D67tmuWGStoAN+iWaIF3Gf2/034siG2z/j+boUKrB8pTKZ6+3TUoATuDkgNZtzt+RzZZUupQ/tDNGAcqbtpfHeR+cth2c3p2f/H1Kam2ELiz+v/6IKx8foRWNBpFhZ/apO08aRY4iNmvYMcrdp226XL+w6bmlb/Y2cIB2vCPUjrOjN7OS3Fdu54kFfrjwaFstNHN3GZwDsObL4uY4tjkZMV6XtaJLYPfJAjfhcuRQ4p4fJ3ZE2qiSUcBAm4I94vEK7A//xW9BlL4FfdEynHMdUhEc2MthXvRzpL0kvQisKAzGmRNFd720SRMN8afZ1eaok5ruHjVjPyQJrNBy6yYo7bvxa7gPqWdyC0d8anCfS/+X0h+E4gkp+XRf848gir84Ju2kZDkrdELlZuvHkGIxxgwlHRIcnpyUkspahI3/g8Z2AUqhO2Q6q1fIvdqAez3LWikpoxsRLDi4h4dr8MyshYmKlIS8r+6ttrJO0zw94d9PqUMMD+BgUdrV7FfyslUlwM4GahgBRwyblfH6R/gJs4AvimXBgHDDSnR/5FtmsNdpfd21lFXnhDu+b/7FPiI5BRsHpCfy2dsXIU6X3+JVtze/sEIFussjB6Kwah3nBnf8yworzH4I+fhOk8xdysx+mvQifQ+zzrtXnOxviaXN06llPkSXzKnpv2nvkb8rz6zY6yMzgZmQ8HKYelYKU7ggYlKNe5cYJ+DQrp4x17dGIDo+mtTKx+sajK74PoJIEnj2rPqwfyfuDKKeBP8wwDj8a1xK9+fTHX2wDzjDI0c35bIxvUFWU3pqWV51aAZv8EQ440iW3y8qstFRrJtHHrfcgSD/k+sevJ9jO5C8MgVSn/OnjpN/2M0k1DQwqQiuXpahU2yY3wPrOOjqJBBHTlavnEwsMj718lCsifrohJRPhKqGkhO34J4c69IsOQx6v/pOuty40bX/7ZKh0U34zIeaEgruSMSMPGwGQpoM8gI0pHRsJlhv2i8F7D7V5mHOKIw1IBKTyOKOuQkVC8/ccBJ8cpxxU9PHV3VB5s/v3FNd+NA0pecwWvXZDtKGhSzSjKvY5KK55pXgIFNxkueLhWuRT4QLB42tgoYxDsbVpYKuTXDGYQYeu3wBOSSrbycTM5Lb4T8POWFQmOanZLiU1oYnfyL5nKnugKsYMLHVOPxQ7Aa9k+etBbAYvXbVl2U+10c+eYur3oynNvPIr5mQ1I3aumvMCPoAtiAcnZsJlDtoU7LZ3WQ/3cb+DEKfMiYf6kImBkxIucn0OqmljGObl4PBEC8XcCEQ3hx8JR6bLQc8JrNoxNZz7mi/SXTGiN7fpVFmVmYzZ7r9WfPzKAApfcLR7iCVTX3tsvqRAu1CjQEfbzyTNuZQBHnPqe51iLJ9J2YcU5wGwjBC2dXRWin5NaYHi3bPBqjJwRi8qWwgks0IiGMHPw/0CP3JJQVcwzefEXU2iKzKT4sQcow1uKG00uO7XZAtg51qaX9Q/8VSEgpjdWLFo8C3uUcIOxnJ2gvvg+LJ7O3UnLFsP+EOGfMxu//vd3D9SL7vJ55FKiCb5gR5VX8+Zk3oc+kYwOUzhrTOAC3pujjDtPYo5EjLom7Z4yqJWKWrB+fMNAq3pbl3gGtL5EGVOf6dC38kPxkppgqj7O05ZVjw==
+          pass bias dreamcatcher
         |
-        input.inputMessage(placeholder='Type here...')
-        |     
-        button.btn(type='submit') Send
-        |     
-        button.btn.cancel(type='button', onclick='closeForm()') Close
-    .footer.text-center
-      if !err
+        a(onclick='openForm()') PopUp
+        |
+        if per == 1   
+          a(href='/Rregister') Register
+        |
         if !searchR
+          a.down-arrow(href='#bottom', data-toggle='tooltip', title='TO BOT')
+            span.fa.fa-chevron-down
+        |
+        form(action='/cerca', method='GET')   
+          input(type='text', placeholder='Search..', name='ricerca')
+      .container
+        .row
+          .col-md-6.m-auto
+            br
+        .row
+          .col-md-6.m-auto
+            a(href='https://tesis.binhexs.it/Tesis/UIClassicASP/default.htm') Tesis
+            br
+            iframe(width='80%', height='250', scrolling='no', frameborder='no', src='https://tesis.binhexs.it/Tesis/UIClassicASP/default.htm')
+          .col-md-6.m-auto  
+            // Inizio codice ilMeteo.it
+            iframe(width='80%', height='250', scrolling='no', frameborder='no', noresize='noresize', src='https://www.ilmeteo.it/box/previsioni.php?citta=4074&type=day1&width=250&ico=5&lang=eng&days=6&font=Verdana&fontsize=10&bg=FFFFFF&fg=000000&bgtitle=0099FF&fgtitle=FFFFFF&bgtab=F0F0F0&fglink=1773C2')
+            // Fine codice ilMeteo.it
+          br
           hr
-          a.up-arrow(href='#', data-toggle='tooltip', title='TO TOP',  id ='bottom')
-            span.fa.fa-chevron-up
-      br
-      br
-      |   
-      p
-        | Made By  
-        a(href='#', data-toggle='tooltip') FT
+          br
+          .col-md-6.m-auto
+            table(border='0')
+              tbody
+                tr
+                  td
+                    script(language='JavaScript', type='text/javascript', charset='iso-8859-1', src='//www.intopic.it/iframe.php?cat=&amp;rootcat=&amp;type=2&amp;bgcolor=FFFFFF&amp;bdcolor=336699&amp;lcolor=000000&amp;font=1&amp;fontsize=8&amp;box=80&amp;window=1')
+          .col-md-6.m-auto
+        //.row
+          #v-pills-tab.nav.flex-column.nav-pills(role='tablist', aria-orientation='vertical')
+            h1 #{msg}
+            a#v-pills-news-tab.nav-link.active(data-toggle='pill', href='#v-pills-news', role='tab', aria-controls='v-pills-news', aria-selected='true') News
+            |   
+            a#v-pills-tesis-tab.nav-link(data-toggle='pill', href='#v-pills-armaniP', role='tab', aria-controls='v-pills-tesis', aria-selected='false') Tesis
+            |   
+            a#v-pills-versaceC-tab.nav-link(data-toggle='pill', href='#v-pills-versaceC', role='tab', aria-controls='v-pills-versaceC', aria-selected='false') Versace Cassa
+            |   
+            a#v-pills-versaceP-tab.nav-link(data-toggle='pill', href='#v-pills-versaceP', role='tab', aria-controls='v-pills-versaceP', aria-selected='false') Versace Pos
+            |
+            a#v-pills-altro-tab.nav-link(data-toggle='pill', href='#v-pills-altro', role='tab', aria-controls='v-pills-altro', aria-selected='false') Altro
+            br
+            form(action='/logout', method='POST')
+                br
+                input(type='submit', value='LogOut', class='btn btn-primary')  
+          .col-md-6.m-auto  
+            #v-pills-tabContent.tab-content
+              #v-pills-news.tab-pane.fade.show.active(role='tabpanel', aria-labelledby='v-pills-news-tab')
+                
+              |   
+              #v-pills-tesis.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-tesis-tab')
+                //iframe(src='www.tesis.binhexs.it', height='200', width='300')
+                //script
+                  include ../js/frame.js
+                a(href='https://tesis.binhexs.it/Tesis/UIClassicASP/default.htm') Tesis
+              |   
+              #v-pills-versaceC.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-versaceC-tab')
+                          
+              |   
+              #v-pills-versaceP.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-versaceP-tab')
+                        
+              |
+              #v-pills-altro.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-altro-tab')
+              |
+      #myForm.chat-popup
+        div
+          a.myA(href='/chat') Fullscreen
+          i.fa.fa-times.myFa(onclick='closeForm()' aria-hidden='true')
+        //iFrame.myFrame(src='/chat')
+      //#myForm.chat-popup
+        li.chat.page
+          p.title(id='nome', class = 'nome') #{nome}
+          h2 Chat
+          |
+          .chatArea
+            ul.messages
+          |
+          input.inputMessage(placeholder='Type here...')
+          |     
+          button.btn(type='submit') Send
+          |     
+          button.btn.cancel(type='button', onclick='closeForm()') Close
+      .footer.text-center
+        if !err
+          if !searchR
+            hr
+            a.up-arrow(href='#', data-toggle='tooltip', title='TO TOP',  id ='bottom')
+              span.fa.fa-chevron-up
+        br
+        br
+        |   
+        p
+          | Made By  
+          a(href='#', data-toggle='tooltip') FT
 
     script
       include ../js/scri.js

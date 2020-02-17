@@ -39,8 +39,10 @@ $(document).ready(function(){
 function openForm() {
   console.log('hey');
   document.getElementById("myForm").style.display = "block";
+  $( "#myForm" ).append( "<iframe class='myFrame' src='/chat'></iframe>");
 }
 
 function closeForm() {
   document.getElementById("myForm").style.display = "none";
+  $( ".myFrame" ).remove();
 }
