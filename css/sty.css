@@ -30,9 +30,6 @@ img{
 .navbar-default .navbar-toggle {
   border-color: transparent;
 }
-.nav-tabs li a {
-  color: #777;
-}
 .open .dropdown-toggle {
   color: #fff;
   background-color: #555 !important;
@@ -42,13 +39,6 @@ img{
 }
 .dropdown-menu li a:hover {
   background-color: red !important;
-}
-.main-container {
- min-height: 100vh; /* will cover the 100% of viewport */
- overflow: hidden;
- display: block;
- position: relative;
- padding-bottom: 100px; /* height of your footer */
 }
 footer {
   background-color: #2d2d30;

@@ -20,6 +20,15 @@ html
     |
     script(src='https://code.jquery.com/jquery-3.2.1.min.js')
     |
+    script(type='text/javascript', src='https://www.ateneoweb.com/strumenti/strumenti.js')
+    |
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css')
+    |   
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js')
+    |   
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js')
+    |   
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js')
     //script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js', integrity='sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4', crossorigin='anonymous')
     |
     //script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js")
@@ -28,38 +37,107 @@ html
   |   
   body
     .main-container
-      .topnav
-        a.active(href='/') Home
+      nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+        a.navbar-brand(href='/') Home
         |   
-        a(href='/guide') Guide
+        button.navbar-toggler.navbar-toggler-right(type='button', data-toggle='collapse', data-target='#navb')
+          span.navbar-toggler-icon
         |   
-        a(href='/upload') Upload
-        |
-        a(href='/chat') Chat
-        //jxDPjG2cjBVzSN/hqi3mvmNq/G9admD3nivM1D67tmuWGStoAN+iWaIF3Gf2/034siG2z/j+boUKrB8pTKZ6+3TUoATuDkgNZtzt+RzZZUupQ/tDNGAcqbtpfHeR+cth2c3p2f/H1Kam2ELiz+v/6IKx8foRWNBpFhZ/apO08aRY4iNmvYMcrdp226XL+w6bmlb/Y2cIB2vCPUjrOjN7OS3Fdu54kFfrjwaFstNHN3GZwDsObL4uY4tjkZMV6XtaJLYPfJAjfhcuRQ4p4fJ3ZE2qiSUcBAm4I94vEK7A//xW9BlL4FfdEynHMdUhEc2MthXvRzpL0kvQisKAzGmRNFd720SRMN8afZ1eaok5ruHjVjPyQJrNBy6yYo7bvxa7gPqWdyC0d8anCfS/+X0h+E4gkp+XRf848gir84Ju2kZDkrdELlZuvHkGIxxgwlHRIcnpyUkspahI3/g8Z2AUqhO2Q6q1fIvdqAez3LWikpoxsRLDi4h4dr8MyshYmKlIS8r+6ttrJO0zw94d9PqUMMD+BgUdrV7FfyslUlwM4GahgBRwyblfH6R/gJs4AvimXBgHDDSnR/5FtmsNdpfd21lFXnhDu+b/7FPiI5BRsHpCfy2dsXIU6X3+JVtze/sEIFussjB6Kwah3nBnf8yworzH4I+fhOk8xdysx+mvQifQ+zzrtXnOxviaXN06llPkSXzKnpv2nvkb8rz6zY6yMzgZmQ8HKYelYKU7ggYlKNe5cYJ+DQrp4x17dGIDo+mtTKx+sajK74PoJIEnj2rPqwfyfuDKKeBP8wwDj8a1xK9+fTHX2wDzjDI0c35bIxvUFWU3pqWV51aAZv8EQ440iW3y8qstFRrJtHHrfcgSD/k+sevJ9jO5C8MgVSn/OnjpN/2M0k1DQwqQiuXpahU2yY3wPrOOjqJBBHTlavnEwsMj718lCsifrohJRPhKqGkhO34J4c69IsOQx6v/pOuty40bX/7ZKh0U34zIeaEgruSMSMPGwGQpoM8gI0pHRsJlhv2i8F7D7V5mHOKIw1IBKTyOKOuQkVC8/ccBJ8cpxxU9PHV3VB5s/v3FNd+NA0pecwWvXZDtKGhSzSjKvY5KK55pXgIFNxkueLhWuRT4QLB42tgoYxDsbVpYKuTXDGYQYeu3wBOSSrbycTM5Lb4T8POWFQmOanZLiU1oYnfyL5nKnugKsYMLHVOPxQ7Aa9k+etBbAYvXbVl2U+10c+eYur3oynNvPIr5mQ1I3aumvMCPoAtiAcnZsJlDtoU7LZ3WQ/3cb+DEKfMiYf6kImBkxIucn0OqmljGObl4PBEC8XcCEQ3hx8JR6bLQc8JrNoxNZz7mi/SXTGiN7fpVFmVmYzZ7r9WfPzKAApfcLR7iCVTX3tsvqRAu1CjQEfbzyTNuZQBHnPqe51iLJ9J2YcU5wGwjBC2dXRWin5NaYHi3bPBqjJwRi8qWwgks0IiGMHPw/0CP3JJQVcwzefEXU2iKzKT4sQcow1uKG00uO7XZAtg51qaX9Q/8VSEgpjdWLFo8C3uUcIOxnJ2gvvg+LJ7O3UnLFsP+EOGfMxu//vd3D9SL7vJ55FKiCb5gR5VX8+Zk3oc+kYwOUzhrTOAC3pujjDtPYo5EjLom7Z4yqJWKWrB+fMNAq3pbl3gGtL5EGVOf6dC38kPxkppgqj7O05ZVjw==
-          pass bias dreamcatcher
-        |
-        a(onclick='openForm()') PopUp
-        |
-        if per == 1   
-          a(href='/Rregister') Register
-        |
-        if !searchR
-          a.down-arrow(href='#bottom', data-toggle='tooltip', title='TO BOT')
-            span.fa.fa-chevron-down
-        |
-        form(action='/cerca', method='GET')   
-          input(type='text', placeholder='Search..', name='ricerca')
+        #navb.collapse.navbar-collapse
+          ul.navbar-nav.mr-auto
+            li.nav-item
+              a.nav-link(href='/guide') Guide
+            li.nav-item
+              a.nav-link(href='/upload') Upload
+            li.nav-item
+              a.nav-link(href='/chat') Chat
+            li.nav-item
+              a.nav-link(href='#' onclick='openForm()') PopUp
+            li.nav-item
+              if per == 1   
+                a.nav-link(href='/Rregister') Register
+            li.nav-item
+              if !searchR
+                a.nav-link.down-arrow(href='#bottom', data-toggle='tooltip', title='TO BOT')
+                  span.fa.fa-chevron-down
+          |     
+          form.form-inline.my-2.my-lg-0(action='/cerca', method='GET')
+            input.form-control.mr-sm-2(type='text', placeholder='Search', name='ricerca')
+            |       
+            button.btn.btn-success.my-2.my-sm-0(type='submit') Search
+
+      // vecchia nav bootstrap 3
+      //nav.navbar.navbar-default.navbar-fixed-top
+        .container-fluid
+          .navbar-header
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='#myNavbar')
+              span.icon-bar
+              |         
+              span.icon-bar
+              |         
+              span.icon-bar
+            |       
+            ul.nav.navbar-nav.navbar-left
+              li
+                a(href='/') Home
+              |         
+              li
+                a(href='/guide') Guide
+              |         
+              li
+                a(href='/upload') Upload
+              |
+              //jxDPjG2cjBVzSN/hqi3mvmNq/G9admD3nivM1D67tmuWGStoAN+iWaIF3Gf2/034siG2z/j+boUKrB8pTKZ6+3TUoATuDkgNZtzt+RzZZUupQ/tDNGAcqbtpfHeR+cth2c3p2f/H1Kam2ELiz+v/6IKx8foRWNBpFhZ/apO08aRY4iNmvYMcrdp226XL+w6bmlb/Y2cIB2vCPUjrOjN7OS3Fdu54kFfrjwaFstNHN3GZwDsObL4uY4tjkZMV6XtaJLYPfJAjfhcuRQ4p4fJ3ZE2qiSUcBAm4I94vEK7A//xW9BlL4FfdEynHMdUhEc2MthXvRzpL0kvQisKAzGmRNFd720SRMN8afZ1eaok5ruHjVjPyQJrNBy6yYo7bvxa7gPqWdyC0d8anCfS/+X0h+E4gkp+XRf848gir84Ju2kZDkrdELlZuvHkGIxxgwlHRIcnpyUkspahI3/g8Z2AUqhO2Q6q1fIvdqAez3LWikpoxsRLDi4h4dr8MyshYmKlIS8r+6ttrJO0zw94d9PqUMMD+BgUdrV7FfyslUlwM4GahgBRwyblfH6R/gJs4AvimXBgHDDSnR/5FtmsNdpfd21lFXnhDu+b/7FPiI5BRsHpCfy2dsXIU6X3+JVtze/sEIFussjB6Kwah3nBnf8yworzH4I+fhOk8xdysx+mvQifQ+zzrtXnOxviaXN06llPkSXzKnpv2nvkb8rz6zY6yMzgZmQ8HKYelYKU7ggYlKNe5cYJ+DQrp4x17dGIDo+mtTKx+sajK74PoJIEnj2rPqwfyfuDKKeBP8wwDj8a1xK9+fTHX2wDzjDI0c35bIxvUFWU3pqWV51aAZv8EQ440iW3y8qstFRrJtHHrfcgSD/k+sevJ9jO5C8MgVSn/OnjpN/2M0k1DQwqQiuXpahU2yY3wPrOOjqJBBHTlavnEwsMj718lCsifrohJRPhKqGkhO34J4c69IsOQx6v/pOuty40bX/7ZKh0U34zIeaEgruSMSMPGwGQpoM8gI0pHRsJlhv2i8F7D7V5mHOKIw1IBKTyOKOuQkVC8/ccBJ8cpxxU9PHV3VB5s/v3FNd+NA0pecwWvXZDtKGhSzSjKvY5KK55pXgIFNxkueLhWuRT4QLB42tgoYxDsbVpYKuTXDGYQYeu3wBOSSrbycTM5Lb4T8POWFQmOanZLiU1oYnfyL5nKnugKsYMLHVOPxQ7Aa9k+etBbAYvXbVl2U+10c+eYur3oynNvPIr5mQ1I3aumvMCPoAtiAcnZsJlDtoU7LZ3WQ/3cb+DEKfMiYf6kImBkxIucn0OqmljGObl4PBEC8XcCEQ3hx8JR6bLQc8JrNoxNZz7mi/SXTGiN7fpVFmVmYzZ7r9WfPzKAApfcLR7iCVTX3tsvqRAu1CjQEfbzyTNuZQBHnPqe51iLJ9J2YcU5wGwjBC2dXRWin5NaYHi3bPBqjJwRi8qWwgks0IiGMHPw/0CP3JJQVcwzefEXU2iKzKT4sQcow1uKG00uO7XZAtg51qaX9Q/8VSEgpjdWLFo8C3uUcIOxnJ2gvvg+LJ7O3UnLFsP+EOGfMxu//vd3D9SL7vJ55FKiCb5gR5VX8+Zk3oc+kYwOUzhrTOAC3pujjDtPYo5EjLom7Z4yqJWKWrB+fMNAq3pbl3gGtL5EGVOf6dC38kPxkppgqj7O05ZVjw==
+                pass bias dreamcatcher         
+              li
+                a(onclick='openForm()') PopUp
+              |         
+              li.dropdown
+                a.dropdown-toggle(data-toggle='dropdown', href='#')
+                  | Chat
+                  span.caret
+                |           
+                ul.dropdown-menu
+                  li
+                    a(href='#') Crea chatroom
+                  |             
+                  li
+                    a(href='#') Entra in una chatroom
+                  |
+                  li
+                    a(href='/chat') Chat global
+              if per == 1   
+                a(href='/Rregister') Register
+              |
+              if !searchR
+                a.down-arrow(href='#bottom', data-toggle='tooltip', title='TO BOT')
+                  span.fa.fa-chevron-down
+            #myNavbar.collapse.navbar-collapse
+              ul.nav.navbar-nav.navbar-right
+                li
+                  a(href='#')
+                    span.glyphicon.glyphicon-search
+                    form(action='/cerca', method='GET')   
+                      input(type='text', placeholder='Search..', name='ricerca')
+      .row
+        .col-md-1.m-auto(style='margin: left;width: 1%;') 
+          
+          button.btn.btn-info(disabled)
+            i.fa.fa-user
+              |  #{ nome }
+        .col-md-1.m-auto(style='margin: right; margin-left: 5%')
+          br
+          form(action='/logout', method='POST')
+            input(type='submit', value='LogOut', class='btn btn-primary')
+          br
       .container
-        .row
-          .col-md-6.m-auto
-            br
         .row
           .col-md-6.m-auto
             a(href='https://tesis.binhexs.it/Tesis/UIClassicASP/default.htm') Tesis
             br
             iframe(width='80%', height='250', scrolling='no', frameborder='no', src='https://tesis.binhexs.it/Tesis/UIClassicASP/default.htm')
           .col-md-6.m-auto  
+            br
             // Inizio codice ilMeteo.it
             iframe(width='80%', height='250', scrolling='no', frameborder='no', noresize='noresize', src='https://www.ilmeteo.it/box/previsioni.php?citta=4074&type=day1&width=250&ico=5&lang=eng&days=6&font=Verdana&fontsize=10&bg=FFFFFF&fg=000000&bgtitle=0099FF&fgtitle=FFFFFF&bgtab=F0F0F0&fglink=1773C2')
             // Fine codice ilMeteo.it
@@ -67,11 +145,9 @@ html
           hr
           br
           .col-md-6.m-auto
-            table(border='0')
-              tbody
-                tr
-                  td
-                    script(language='JavaScript', type='text/javascript', charset='iso-8859-1', src='//www.intopic.it/iframe.php?cat=&amp;rootcat=&amp;type=2&amp;bgcolor=FFFFFF&amp;bdcolor=336699&amp;lcolor=000000&amp;font=1&amp;fontsize=8&amp;box=80&amp;window=1')
+            script(type='text/javascript').
+              (function() { var d = { aw_id : 'toolsContainer-' + Math.floor((Math.random() * 999999) + 1), aw_tool : '1', aw_width : '80%', aw_height : '300px', aw_border : 1, aw_showimg : 1, aw_target : 1, aw_rows : 10, aw_color_header : '#FFFFFF', aw_color_boxtitle : '#CCCCCC', aw_color_boxtitletext : '#FFFFFF', aw_color_body : '#FFFFFF', aw_color_border : '#DDDDDD', aw_color_text : '#555555', aw_boxtitle : 'NOTIZIE FISCALI' }; awToolsSetup(d); })();
+            br
           .col-md-6.m-auto
         //.row
           #v-pills-tab.nav.flex-column.nav-pills(role='tablist', aria-orientation='vertical')

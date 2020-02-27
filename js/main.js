@@ -231,6 +231,8 @@ $(function() {
   socket.on('login', (data) => {
     connected = true;
     // Display the welcome message
+    const sessionID = socket.sessionid;
+    console.log("session "+sessionID);
     var message = "Joined successfully!";
     log(message, {
       prepend: true

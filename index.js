@@ -38,6 +38,8 @@ const httpsServer = https.createServer(httpsOptions, app);
 httpsServer.listen(httpsPort, hostname);
 */
 
+// @desc settaggio variabili globali dell' express session 
+
 const {
     NODE_ENV = 'development',
     SESS_NAME = 'sid',
@@ -45,11 +47,24 @@ const {
     SESSION_SECRET = 'ciao1234'
 } = process.env
 
-const conn = mysql.createPool({
+//REMOTE MYSQL CREDENZIALI 
+/*const conn = mysql.createPool({
             host: "remotemysql.com",
             user: "W1Y2U1WmcR",
             password: "r9SaoTN3hk",
             database: "W1Y2U1WmcR"
+        });*/
+
+app.enable('trust proxy');
+
+const conn = mysql.createPool({
+            connectTimeout  : 60 * 60 * 1000,
+            acquireTimeout  : 60 * 60 * 1000,
+            timeout         : 60 * 60 * 1000,
+            host: "db4free.net",
+            user: "freeremfra",
+            password: "Admin1234",
+            database: "tabuser"
         });
 
 const IN_PROD = NODE_ENV === "production";
@@ -77,8 +92,9 @@ app.use(session({
     // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
   }
 }));
+  
 
-//app.enable('trust proxy');
+app.enable('trust proxy');
 
 /* CONFIGUARZIONE HTTPS PER RE-INDIRIZZARE DA HTTP A HTTPS
 app.use (function (req, res, next) {
@@ -236,9 +252,18 @@ app.get('/pop', function(req,res){
   res.render('popup');
 })
 
+app.get('/hey', function(req,res){
+  res.render('chat',{socket: "helo"});
+})
 
 app.get('/', redirectLogin, check, function(req, res){
-  
+  req.on("close", function() {
+    console.log("chiuso")
+  });
+  req.on("end", function() {
+    console.log("finito")
+  });
+  console.log(req.protocol + " " + req.secure);
   console.log(mobile(req));
   console.log('helo')
   const { user } = res.locals;
@@ -460,7 +485,7 @@ app.post("/files/download/:name", redirectLogin, (req, res) => {
 app.get("/cerca", redirectLogin, check, (req,res) => {
   const ricerca = req.query.ricerca;
   const { user } = res.locals;
-  //console.log(ricerca)
+  console.log(ricerca)
   const file = gfs
     .find()
     .toArray((err, files) => {
@@ -505,7 +530,7 @@ app.get("/cerca", redirectLogin, check, (req,res) => {
         }else{
           console.log("si")
         }
-      return res.render("index", {
+      return res.render("upload", {
         searchR: s, per: user.perm, msg:"Ciao " + user.nome
       });
     }
@@ -666,7 +691,7 @@ app.get("/image/:filename", redirectLogin, (req, res) => {
 app.post("/files/del/:id", redirectLogin,(req, res) => {
     gfs.delete(new mongoose.Types.ObjectId(req.params.id), (err, data) => {
       if (err) return res.status(404).json({ err: err.message });
-      res.redirect("/");
+      res.redirect("/guides");
     });
 });
 
@@ -711,7 +736,8 @@ io.on('connection', (socket) => {
   // when the client emits 'add user', this listens and executes
   socket.on('add user', (username) => {
     if (addedUser) return;
-
+    const sessionID = socket.id;
+    console.log("session "+ sessionID);
     // we store the username in the socket session for this client
     socket.username = username;
     ++numUsers;
