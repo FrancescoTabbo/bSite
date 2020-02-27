@@ -270,6 +270,10 @@ app.get('/', redirectLogin, check, function(req, res){
   res.render('index', {per: user.perm, msg:"Ciao " + user.nome, nome:user.nome})
 })
 
+app.get('/testCt', function(req, res){
+  res.render('testChat')
+})
+
 // @route get
 // @desc upload page
 app.get('/upload', redirectLogin, check, function(req, res) {

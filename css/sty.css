@@ -134,8 +134,13 @@ option[value=""][disabled] {
   z-index: 9;
   height: 400px;
 }
+.chat-popup[id="myForm"]{
+  border-radius: 25px;
+  padding: 20px;
+}
 .myFrame {
   height: 95%;
+  
 }
 .myFa {
   position: absolute;
