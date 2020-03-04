@@ -20,7 +20,8 @@ html
     style
       include ../css/sty.css
   body
-    .topnav
+    //vecchia nav
+    //.topnav
       a.active(href='/') Home
       |   
       a(href='/guide') Guide
@@ -34,6 +35,34 @@ html
       |
       form(action='/cerca', method='GET')   
         input(type='text', placeholder='Search..', name='ricerca')
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+      a.navbar-brand(href='/') Home
+      |   
+      button.navbar-toggler.navbar-toggler-right(type='button', data-toggle='collapse', data-target='#navb')
+        span.navbar-toggler-icon
+      |   
+      #navb.collapse.navbar-collapse
+        ul.navbar-nav.mr-auto
+          li.nav-item
+            a.nav-link(href='/guide') Guide
+          li.nav-item
+            a.nav-link(href='/upload') Upload
+          li.nav-item
+            a.nav-link(href='/chat') Chat
+          li.nav-item
+            a.nav-link(href='#' onclick='openForm()') PopUp
+          li.nav-item
+            if per == 1   
+              a.nav-link(href='/Rregister') Register
+          li.nav-item
+            if !searchR
+              a.nav-link.down-arrow(href='#bottom', data-toggle='tooltip', title='TO BOT')
+                span.fa.fa-chevron-down
+        |     
+        form.form-inline.my-2.my-lg-0(action='/cerca', method='GET')
+          input.form-control.mr-sm-2(type='text', placeholder='Search', name='ricerca')
+          |       
+          button.btn.btn-success.my-2.my-sm-0(type='submit') Search
     br
     .container
       .row
@@ -102,3 +131,10 @@ html
                   a(href='#')
                     i.fa.fa-unlock
                     |  Make admin
+    #myForm.chat-popup
+      div
+        a.myA(href='/chat' style='color:white') Fullscreen
+        i.fa.fa-times.myFa(onclick='closeForm()' aria-hidden='true' style ='right: 20px')  
+
+    script
+      include ../js/scri.js

@@ -46,3 +46,6 @@ function closeForm() {
   document.getElementById("myForm").style.display = "none";
   $( ".myFrame" ).remove();
 }
+$(".navbar-toggler-right").click(function(){
+  $(".collapse").collapse('toggle');
+});
